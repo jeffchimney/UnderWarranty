@@ -16,4 +16,5 @@ class WarrantyTableViewCell: UITableViewCell {
     @IBOutlet weak var warrantyEnds: UILabel!
     @IBOutlet weak var warrantyImageView: UIImageView!
     @IBOutlet weak var dashLabel: UILabel!
+    @IBOutlet weak var photoLoadingIndicator: UIActivityIndicatorView!
 }

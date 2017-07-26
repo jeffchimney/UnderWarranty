@@ -819,7 +819,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ends" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Eek-Ry-K99">
-                                                    <rect key="frame" x="151" y="51" width="30" height="18.5"/>
+                                                    <rect key="frame" x="151" y="51" width="30" height="19"/>
                                                     <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="14"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
@@ -831,15 +831,20 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Starts" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7FP-CP-w6D">
-                                                    <rect key="frame" x="88" y="51" width="36" height="18.5"/>
+                                                    <rect key="frame" x="88" y="51" width="36" height="19"/>
                                                     <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="14"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="EeZ-qa-MbO">
+                                                    <rect key="frame" x="30" y="42" width="20" height="20"/>
+                                                </activityIndicatorView>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="7FP-CP-w6D" firstAttribute="top" secondItem="GTy-iS-eAP" secondAttribute="bottom" constant="8" symbolic="YES" id="0HJ-79-z3T"/>
+                                                <constraint firstItem="EeZ-qa-MbO" firstAttribute="centerY" secondItem="TIR-AI-Lp7" secondAttribute="centerY" id="3F5-iO-UlJ"/>
                                                 <constraint firstItem="Eek-Ry-K99" firstAttribute="leading" secondItem="OjL-XL-sBi" secondAttribute="trailing" constant="12" id="7th-34-5dF"/>
+                                                <constraint firstItem="EeZ-qa-MbO" firstAttribute="centerX" secondItem="TIR-AI-Lp7" secondAttribute="centerX" id="9Db-hI-eaz"/>
                                                 <constraint firstItem="TIR-AI-Lp7" firstAttribute="centerY" secondItem="KEm-Vk-89d" secondAttribute="centerY" id="C6d-3Q-Sb2"/>
                                                 <constraint firstItem="GTy-iS-eAP" firstAttribute="leading" secondItem="TIR-AI-Lp7" secondAttribute="trailing" constant="8" symbolic="YES" id="C8V-q4-HkG"/>
                                                 <constraint firstItem="TIR-AI-Lp7" firstAttribute="top" secondItem="KEm-Vk-89d" secondAttribute="top" id="Dmz-nH-TWA"/>
@@ -854,6 +859,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="photoLoadingIndicator" destination="EeZ-qa-MbO" id="rvC-Lc-q6q"/>
                                             <outlet property="title" destination="GTy-iS-eAP" id="sfS-mO-UO5"/>
                                             <outlet property="warrantyEnds" destination="Eek-Ry-K99" id="8Lm-aO-aB3"/>
                                             <outlet property="warrantyImageView" destination="TIR-AI-Lp7" id="WoY-2n-2OJ"/>

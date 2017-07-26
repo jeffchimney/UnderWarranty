@@ -56,6 +56,9 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         // set up zone.
+        if UserDefaults.standard.object(forKey: "zoneCreated") == nil || UserDefaults.standard.bool(forKey: "zoneCreated") == false {
+            createCustomZone()
+        }
         
         UIApplication.shared.applicationIconBadgeNumber = 0
         
@@ -115,10 +118,6 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         updateUserInterface()
         handleRefresh(refreshControl: refreshControl)
-        
-        if UserDefaults.standard.object(forKey: "zoneCreated") == nil || UserDefaults.standard.bool(forKey: "zoneCreated") == false {
-            createCustomZone()
-        }
     }
     
     func createCustomZone() {
@@ -148,6 +147,9 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     func handleRefresh(refreshControl: UIRefreshControl) {
         // check if the user is signed in, if not then there is nothing to refresh.
             // check what the current connection is.  If wifi, refresh.  If data, and sync by data is enabled, refresh.  Otherwise don't.
+        if !refreshControl.isRefreshing {
+            refreshControl.beginRefreshing()
+        }
         let conn = UserDefaultsHelper.currentConnection()
         if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
             // coredata
@@ -163,7 +165,7 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
             // cloudkit
             let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
             let predicate = NSPredicate(value: true)
-            let query = CKQuery(recordType: "Record", predicate: predicate)
+            let query = CKQuery(recordType: "Records", predicate: predicate)
             
             privateDatabase.perform(query, inZoneWith: zoneID, completionHandler: { (results, error) in
                 if error != nil {
@@ -244,7 +246,7 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                             CoreDataHelper.importNotesFromCloudKit(associatedWith: recordMatch, in: self.managedContext!)
                             
                             // sync any images that havent been synced to the cloud yet
-                            CloudKitHelper.syncImagesToCloudKit(associatedWith: recordMatch, in: self.managedContext!)
+                            //CloudKitHelper.syncImagesToCloudKit(associatedWith: recordMatch, in: self.managedContext!)
                             // ^ this should be happening automatically on image creation now.
                             
                         } else { // create new record from data in cloud
@@ -283,23 +285,21 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                             }
                             record.lastUpdated = Date() as NSDate?
                             record.recordID = result.recordID.recordName
+                            
+                            CoreDataHelper.importImagesFromCloudKit(associatedWith: record, in: self.managedContext!, tableToRefresh: self.warrantiesTableView)
+                            CoreDataHelper.importNotesFromCloudKit(associatedWith: record, in: self.managedContext!)
                         }
                         // Check each note and image in the cloud to check if it has been deleted
                         self.removeRecentlyDeletedImagesAndNotes(associatedWith: result.recordID, in: self.managedContext!)
                     }
-                    // Whatever remains in the cdRecords array, sync to cloud and set lastSynced to current time
-                    // this should already be up to date because everything is being synced on creation.
-//                        for eachRecord in cdRecords {
-//                            CloudKitHelper.importCDRecord(cdRecord: eachRecord, context: self.managedContext!)
-//                        }
-//                        DispatchQueue.main.async {
-//                            print("Just about to save")
-//                        }
+                    
                     CoreDataHelper.save(context: self.managedContext!)
-                }
-                DispatchQueue.main.async {
-                    self.refreshControl.endRefreshing()
-                    self.warrantiesTableView.reloadData()
+                    DispatchQueue.main.async {
+                        let fetchedRecords = CoreDataHelper.fetchAllRecords(in: self.managedContext!)
+                        self.checkExpiryAndDeletedDates(for: fetchedRecords, context: self.managedContext!)
+                        self.refreshControl.endRefreshing()
+                        self.warrantiesTableView.reloadData()
+                    }
                 }
             })
         } else {
@@ -450,8 +450,12 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                 if fetchedImages.count > 0 {
                     let recordImage = fetchedImages[0]
                     cell.warrantyImageView.image = UIImage(data: recordImage.image! as Data)
+                    cell.photoLoadingIndicator.stopAnimating()
+                    cell.photoLoadingIndicator.isHidden = true
                 } else {
                     cell.warrantyImageView.image = UIImage()
+                    cell.photoLoadingIndicator.startAnimating()
+                    cell.photoLoadingIndicator.isHidden = false
                 }
             } else {
                 filteredRecords.sort(by:{ $0.warrantyEnds?.compare($1.warrantyEnds! as Date) == .orderedAscending})
@@ -468,8 +472,12 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                 if fetchedImages.count > 0 {
                     let recordImage = fetchedImages[0]
                     cell.warrantyImageView.image = UIImage(data: recordImage.image! as Data)
+                    cell.photoLoadingIndicator.stopAnimating()
+                    cell.photoLoadingIndicator.isHidden = true
                 } else {
                     cell.warrantyImageView.image = UIImage()
+                    cell.photoLoadingIndicator.startAnimating()
+                    cell.photoLoadingIndicator.isHidden = false
                 }
             }
         } else {
@@ -488,8 +496,12 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                 if fetchedImages.count > 0 {
                     let recordImage = fetchedImages[0]
                     cell.warrantyImageView.image = UIImage(data: recordImage.image! as Data)
+                    cell.photoLoadingIndicator.stopAnimating()
+                    cell.photoLoadingIndicator.isHidden = true
                 } else {
                     cell.warrantyImageView.image = UIImage()
+                    cell.photoLoadingIndicator.startAnimating()
+                    cell.photoLoadingIndicator.isHidden = false
                 }
             } else {
                 records.sort(by:{ $0.warrantyEnds?.compare($1.warrantyEnds! as Date) == .orderedAscending})
@@ -506,12 +518,17 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                 if fetchedImages.count > 0 {
                     let recordImage = fetchedImages[0]
                     cell.warrantyImageView.image = UIImage(data: recordImage.image! as Data)
+                    cell.photoLoadingIndicator.stopAnimating()
+                    cell.photoLoadingIndicator.isHidden = true
                 } else {
                     cell.warrantyImageView.image = UIImage()
+                    cell.photoLoadingIndicator.startAnimating()
+                    cell.photoLoadingIndicator.isHidden = false
                 }
             }
             
         }
+        
         cell.warrantyImageView.contentMode = .scaleAspectFit
         cell.title.textColor = cell.tintColor
         cell.backgroundColor = UIColor(colorLiteralRed: 189, green: 195, blue: 201, alpha: 1.0)

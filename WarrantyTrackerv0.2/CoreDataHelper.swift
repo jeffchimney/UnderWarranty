@@ -367,4 +367,57 @@ class CoreDataHelper {
             }
         })
     }
+    
+    static func importImagesFromCloudKit(associatedWith: Record, in context: NSManagedObjectContext, tableToRefresh: UITableView) {
+        let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
+        let publicDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
+        let predicate = NSPredicate(format: "associatedRecord = %@ AND recentlyDeleted = 0", CKReference(record: CKRecord(recordType: "Images", recordID: CKRecordID(recordName: associatedWith.recordID!, zoneID: zoneID)), action: CKReferenceAction.deleteSelf))
+        let query = CKQuery(recordType: "Images", predicate: predicate)
+        
+        let localImageRecords = fetchImages(for: associatedWith, in: context)
+        var localImageIDs: [String] = []
+        for imageRecord in localImageRecords {
+            localImageIDs.append(imageRecord.id!)
+        }
+        
+        publicDatabase.perform(query, inZoneWith: zoneID, completionHandler: { (results, error) in
+            if error != nil {
+                print("Error pulling from CloudKit")
+            } else {
+                // pare down results that already exist in the cloud
+                for result in results! {
+                    
+                    if result.value(forKey: "recentlyDeleted") as! Int == 0 && !localImageIDs.contains(result.recordID.recordName) { // if !recentlyDeleted and doesnt already exist in coredata, add to coredata
+                        let imageEntity = NSEntityDescription.entity(forEntityName: "Image", in: context)!
+                        
+                        let image = NSManagedObject(entity: imageEntity, insertInto: context) as! Image
+                        
+                        image.lastSynced = Date() as NSDate
+                        
+                        // CKAssets need to be converted to NSData
+                        let imageData = result.value(forKey: "image") as! CKAsset
+                        
+                        image.image = NSData(contentsOf: imageData.fileURL)
+                        
+                        image.id = result.recordID.recordName
+                        image.record = associatedWith
+                        
+                        // save locally
+                        do {
+                            try context.save()
+                            DispatchQueue.main.async {
+                                tableToRefresh.reloadData()
+                                print("Imported images to core data")
+                            }
+                        } catch {
+                            DispatchQueue.main.async {
+                                print("Error importing images to core data")
+                            }
+                            return
+                        }
+                    }
+                }
+            }
+        })
+    }
 }
