@@ -164,6 +164,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let recordID = queryNotification.recordID
             
             CloudKitHelper.fetchRecord(recordID: recordID!)
+            
+//        print("Received notification!")
+//
+//        guard let viewController = self.window?.rootViewController as? PrimaryViewController else { return }
+//
+//        let dict = userInfo as! [String: NSObject]
+//        guard let notification:CKDatabaseNotification = CKNotification(fromRemoteNotificationDictionary:dict) as? CKDatabaseNotification else { return }
+//
+//        viewController.fetchChanges(in: notification.databaseScope) {
+//            completionHandler(.newData)
         }
     }
 }
