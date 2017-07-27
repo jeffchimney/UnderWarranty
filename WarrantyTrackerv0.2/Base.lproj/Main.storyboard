@@ -807,9 +807,9 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="TIR-AI-Lp7">
-                                                    <rect key="frame" x="0.0" y="0.0" width="80" height="105"/>
+                                                    <rect key="frame" x="8" y="8" width="66" height="89"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="80" id="dJh-Ro-g9f"/>
+                                                        <constraint firstAttribute="width" constant="66" id="w22-Uf-IIK"/>
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GTy-iS-eAP">
@@ -837,25 +837,25 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="EeZ-qa-MbO">
-                                                    <rect key="frame" x="30" y="42" width="20" height="20"/>
+                                                    <rect key="frame" x="31" y="42" width="20" height="20"/>
                                                 </activityIndicatorView>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstItem="TIR-AI-Lp7" firstAttribute="leading" secondItem="KEm-Vk-89d" secondAttribute="leadingMargin" id="06u-lo-qme"/>
                                                 <constraint firstItem="7FP-CP-w6D" firstAttribute="top" secondItem="GTy-iS-eAP" secondAttribute="bottom" constant="8" symbolic="YES" id="0HJ-79-z3T"/>
-                                                <constraint firstItem="EeZ-qa-MbO" firstAttribute="centerY" secondItem="TIR-AI-Lp7" secondAttribute="centerY" id="3F5-iO-UlJ"/>
                                                 <constraint firstItem="Eek-Ry-K99" firstAttribute="leading" secondItem="OjL-XL-sBi" secondAttribute="trailing" constant="12" id="7th-34-5dF"/>
-                                                <constraint firstItem="EeZ-qa-MbO" firstAttribute="centerX" secondItem="TIR-AI-Lp7" secondAttribute="centerX" id="9Db-hI-eaz"/>
-                                                <constraint firstItem="TIR-AI-Lp7" firstAttribute="centerY" secondItem="KEm-Vk-89d" secondAttribute="centerY" id="C6d-3Q-Sb2"/>
-                                                <constraint firstItem="GTy-iS-eAP" firstAttribute="leading" secondItem="TIR-AI-Lp7" secondAttribute="trailing" constant="8" symbolic="YES" id="C8V-q4-HkG"/>
-                                                <constraint firstItem="TIR-AI-Lp7" firstAttribute="top" secondItem="KEm-Vk-89d" secondAttribute="top" id="Dmz-nH-TWA"/>
                                                 <constraint firstItem="OjL-XL-sBi" firstAttribute="leading" secondItem="7FP-CP-w6D" secondAttribute="trailing" constant="8" symbolic="YES" id="FHh-x9-wew"/>
+                                                <constraint firstItem="TIR-AI-Lp7" firstAttribute="centerY" secondItem="KEm-Vk-89d" secondAttribute="centerY" id="MAi-lg-2ES"/>
+                                                <constraint firstItem="TIR-AI-Lp7" firstAttribute="top" secondItem="GTy-iS-eAP" secondAttribute="top" id="N5L-XI-dnE"/>
                                                 <constraint firstAttribute="trailing" secondItem="GTy-iS-eAP" secondAttribute="trailing" id="OxY-xP-ayl"/>
                                                 <constraint firstItem="7FP-CP-w6D" firstAttribute="centerY" secondItem="OjL-XL-sBi" secondAttribute="centerY" id="V0a-i3-DPg"/>
                                                 <constraint firstItem="Eek-Ry-K99" firstAttribute="centerY" secondItem="OjL-XL-sBi" secondAttribute="centerY" id="cV6-2x-yyw"/>
+                                                <constraint firstItem="TIR-AI-Lp7" firstAttribute="centerY" secondItem="EeZ-qa-MbO" secondAttribute="centerY" id="eB0-qW-9Rg"/>
                                                 <constraint firstItem="Eek-Ry-K99" firstAttribute="centerY" secondItem="7FP-CP-w6D" secondAttribute="centerY" id="fOD-us-Fcm"/>
                                                 <constraint firstItem="GTy-iS-eAP" firstAttribute="top" secondItem="KEm-Vk-89d" secondAttribute="topMargin" id="gH1-pn-rYB"/>
-                                                <constraint firstItem="TIR-AI-Lp7" firstAttribute="leading" secondItem="KEm-Vk-89d" secondAttribute="leading" id="oiT-KR-2dS"/>
+                                                <constraint firstItem="TIR-AI-Lp7" firstAttribute="centerX" secondItem="EeZ-qa-MbO" secondAttribute="centerX" id="lrB-Y2-7Cl"/>
                                                 <constraint firstItem="GTy-iS-eAP" firstAttribute="leading" secondItem="7FP-CP-w6D" secondAttribute="leading" id="tZk-X9-XZF"/>
+                                                <constraint firstItem="GTy-iS-eAP" firstAttribute="leading" secondItem="TIR-AI-Lp7" secondAttribute="trailing" constant="14" id="uPg-NR-WgP"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>

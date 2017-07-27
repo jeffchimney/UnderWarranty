@@ -420,4 +420,43 @@ class CoreDataHelper {
             }
         })
     }
+    
+    static func cloudKitRecordChanged(record: CKRecord, in context: NSManagedObjectContext) {
+        
+        // try to find the record in coredata
+        let fetchedRecord = fetchNote(with: record.recordID.recordName, in: context)
+        
+        let (title, noteString) = syncToNote(record: record)
+        
+        fetchedRecord?.title = title
+        fetchedRecord?.noteString = noteString
+        
+        do {
+            try context.save()
+            DispatchQueue.main.async {
+                print("Synced Changes to Note to Core Data")
+            }
+        } catch {
+            DispatchQueue.main.async {
+                print("Error Syncing Changes to Note to Core Data")
+            }
+            return
+        }
+    }
+    
+    static func syncToNote(record: CKRecord) -> (String?, String?) {
+        let title = record["title"] as? String
+        guard title != nil else {
+            return (nil, nil)
+        }
+        
+        // CKAsset data is stored as a local temporary file. Read it
+        // into a String here.
+        let noteString = record["noteString"] as? String
+        guard title != nil else {
+            return (nil, nil)
+        }
+        
+        return (title, noteString)
+    }
 }

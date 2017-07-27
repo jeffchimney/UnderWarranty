@@ -52,8 +52,9 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     var privateDB: CKDatabase!
     let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
     var createdCustomZone = false
-    //var subscribedToPrivateChanges = false
-    //let privateSubscriptionId = "private-changes"
+    let subscriptionID = "cloudkit-record-changes"
+    let subscriptionSavedKey = "ckSubscriptionSaved"
+    let serverChangeTokenKey = "ckServerChangeToken"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -144,135 +145,91 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             UserDefaults.standard.set(true, forKey: "zoneCreated")
             
-//            if !self.subscribedToPrivateChanges {
-//                let createSubscriptionOperation = self.createDatabaseSubscriptionOperation(subscriptionId: privateSubscriptionId)
-//                createSubscriptionOperation.modifySubscriptionsCompletionBlock = { (subscriptions, deletedIds, error) in
-//                    if error == nil { self.subscribedToPrivateChanges = true }
-//                    // else custom error handling
-//                }
-//                self.privateDB.add(createSubscriptionOperation)
-//            }
-            
-            // Fetch any changes from the server that happened while the app wasn't running
-//            createZoneGroup.notify(queue: DispatchQueue.global()) {
-//                if self.createdCustomZone {
-//                    self.fetchChanges(in: .private) {}
-//                }
-//            }
+            saveSubscription()
         }
     }
-//
-//    func createDatabaseSubscriptionOperation(subscriptionId: String) -> CKModifySubscriptionsOperation {
-//        let subscription = CKDatabaseSubscription.init(subscriptionID: subscriptionId)
-//
-//        let notificationInfo = CKNotificationInfo()
-//        // send a silent notification
-//        notificationInfo.shouldSendContentAvailable = true
-//        subscription.notificationInfo = notificationInfo
-//
-//        let operation = CKModifySubscriptionsOperation(subscriptionsToSave: [subscription], subscriptionIDsToDelete: [])
-//        operation.qualityOfService = .utility
-//
-//        return operation
-//    }
-//
-//    func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
-//        switch databaseScope {
-//        case .private:
-//            fetchDatabaseChanges(database: self.privateDB, databaseTokenKey: "private", completion: completion)
-//        case .shared:
-//            print("Shared database changed?  Not good, something funky is going on.")
-//        case .public:
-//            fatalError()
-//        }
-//    }
-//
-//    func fetchDatabaseChanges(database: CKDatabase, databaseTokenKey: String, completion: @escaping () -> Void) {
-//        var changedZoneIDs: [CKRecordZoneID] = []
-//
-//        // think I need to encode the actual change token on save to userdefaults and then decode it here.
-//        let changeToken = UserDefaults.standard.object(forKey: "changeToken") as! CKServerChangeToken // Read change token from disk
-//        let operation = CKFetchDatabaseChangesOperation(previousServerChangeToken: changeToken)
-//
-//        operation.recordZoneWithIDChangedBlock = { (zoneID) in
-//            changedZoneIDs.append(zoneID)
-//        }
-//
-//        operation.recordZoneWithIDWasDeletedBlock = { (zoneID) in
-//            // Write this zone deletion to memory
-//        }
-//
-//        operation.changeTokenUpdatedBlock = { (token) in
-//            // Flush zone deletions for this database to disk
-//            // Write this new database change token to memory
-//        }
-//
-//        operation.fetchDatabaseChangesCompletionBlock = { (token, moreComing, error) in
-//            if let error = error {
-//                print("Error during fetch shared database changes operation", error)
-//                completion()
-//                return
-//            }
-//            // Flush zone deletions for this database to disk
-//            // Write this new database change token to memory
-//            print("Token: \(String(describing: token))")
-//
-//            self.fetchZoneChanges(database: database, databaseTokenKey: databaseTokenKey, zoneIDs: changedZoneIDs) {
-//                // Flush in-memory database change token to disk
-//                print("Token Key: \(databaseTokenKey)")
-//
-//                completion()
-//            }
-//        }
-//        operation.qualityOfService = .userInitiated
-//
-//        database.add(operation)
-//    }
-//
-//    func fetchZoneChanges(database: CKDatabase, databaseTokenKey: String, zoneIDs: [CKRecordZoneID], completion: @escaping () -> Void) {
-//
-//        // Look up the previous change token for each zone
-//        var optionsByRecordZoneID = [CKRecordZoneID: CKFetchRecordZoneChangesOptions]()
-//        for zoneID in zoneIDs {
-//            let options = CKFetchRecordZoneChangesOptions()
-//            //options.previousServerChangeToken = … // Read change token from disk
-//                optionsByRecordZoneID[zoneID] = options
-//        }
-//        let operation = CKFetchRecordZoneChangesOperation(recordZoneIDs: zoneIDs, optionsByRecordZoneID: optionsByRecordZoneID)
-//
-//        operation.recordChangedBlock = { (record) in
-//            print("Record changed:", record)
-//            // Write this record change to memory
-//        }
-//
-//        operation.recordWithIDWasDeletedBlock = { (recordId) in
-//            print("Record deleted:", recordId)
-//            // Write this record deletion to memory
-//        }
-//
-//        operation.recordZoneChangeTokensUpdatedBlock = { (zoneId, token, data) in
-//            // Flush record changes and deletions for this zone to disk
-//            // Write this new zone change token to disk
-//        }
-//
-//        operation.recordZoneFetchCompletionBlock = { (zoneId, changeToken, _, _, error) in
-//            if let error = error {
-//                print("Error fetching zone changes for \(databaseTokenKey) database:", error)
-//                return
-//            }
-//            // Flush record changes and deletions for this zone to disk
-//            // Write this new zone change token to disk
-//        }
-//
-//        operation.fetchRecordZoneChangesCompletionBlock = { (error) in
-//            if let error = error {
-//                print("Error fetching zone changes for \(databaseTokenKey) database:", error)
-//            }
-//            completion()
-//        }
-//
-//        database.add(operation)
-//    }
+    
+    public func saveSubscription() {
+        // Use a local flag to avoid saving the subscription more than once.
+        let alreadySaved = UserDefaults.standard.bool(forKey: subscriptionSavedKey)
+        guard !alreadySaved else {
+            return
+        }
+        
+        let createSubscriptionOperation = self.createDatabaseSubscriptionOperation(subscriptionId: subscriptionID)
+        createSubscriptionOperation.modifySubscriptionsCompletionBlock = { (subscriptions, deletedIds, error) in
+            if error != nil {
+                // else custom error handling
+            }
+        }
+        self.privateDB.add(createSubscriptionOperation)
+        
+        UserDefaults.standard.set(true, forKey: self.subscriptionSavedKey)
+    }
+    
+    func createDatabaseSubscriptionOperation(subscriptionId: String) -> CKModifySubscriptionsOperation {
+        let subscription = CKDatabaseSubscription.init(subscriptionID: subscriptionId)
+        
+        let notificationInfo = CKNotificationInfo()
+        // send a silent notification
+        notificationInfo.shouldSendContentAvailable = true
+        subscription.notificationInfo = notificationInfo
+        
+        let operation = CKModifySubscriptionsOperation(subscriptionsToSave: [subscription], subscriptionIDsToDelete: [])
+        operation.qualityOfService = .utility
+        
+        return operation
+    }
+    
+    public func handleNotification() {
+        // Use the ChangeToken to fetch only whatever changes have occurred since the last
+        // time we asked, since intermediate push notifications might have been dropped.
+        var changeToken: CKServerChangeToken? = nil
+        let changeTokenData = UserDefaults.standard.data(forKey: serverChangeTokenKey)
+        if changeTokenData != nil {
+            changeToken = NSKeyedUnarchiver.unarchiveObject(with: changeTokenData!) as! CKServerChangeToken?
+        }
+        let options = CKFetchRecordZoneChangesOptions()
+        options.previousServerChangeToken = changeToken
+        let optionsMap = [zoneID: options]
+        let operation = CKFetchRecordZoneChangesOperation(recordZoneIDs: [zoneID], optionsByRecordZoneID: optionsMap)
+        operation.fetchAllChanges = true
+        operation.recordChangedBlock = { record in
+            DispatchQueue.main.async {
+                print(record)
+            }
+            CoreDataHelper.cloudKitRecordChanged(record: record, in: self.managedContext!)
+        }
+        operation.recordZoneChangeTokensUpdatedBlock = { zoneID, changeToken, data in
+            guard let changeToken = changeToken else {
+                return
+            }
+            
+            let changeTokenData = NSKeyedArchiver.archivedData(withRootObject: changeToken)
+            UserDefaults.standard.set(changeTokenData, forKey: self.serverChangeTokenKey)
+        }
+        operation.recordZoneFetchCompletionBlock = { zoneID, changeToken, data, more, error in
+            guard error == nil else {
+                return
+            }
+            guard let changeToken = changeToken else {
+                return
+            }
+            
+            let changeTokenData = NSKeyedArchiver.archivedData(withRootObject: changeToken)
+            UserDefaults.standard.set(changeTokenData, forKey: self.serverChangeTokenKey)
+        }
+        operation.fetchRecordZoneChangesCompletionBlock = { error in
+            guard error == nil else {
+                return
+            }
+        }
+        operation.qualityOfService = .utility
+        
+        let container = CKContainer.default()
+        let db = container.privateCloudDatabase
+        db.add(operation)
+    }
     
     func handleRefresh(refreshControl: UIRefreshControl) {
         // check if the user is signed in, if not then there is nothing to refresh.
@@ -560,6 +517,7 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! WarrantyTableViewCell
+        print("\nTable View is Reloading\n")
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMM d, yyyy"
@@ -583,9 +541,9 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.photoLoadingIndicator.stopAnimating()
                     cell.photoLoadingIndicator.isHidden = true
                 } else {
-                    cell.warrantyImageView.image = UIImage()
-                    cell.photoLoadingIndicator.startAnimating()
-                    cell.photoLoadingIndicator.isHidden = false
+                    cell.warrantyImageView.image = UIImage(named: "placeholder")
+                    //cell.photoLoadingIndicator.startAnimating()
+                    cell.photoLoadingIndicator.isHidden = true
                 }
             } else {
                 filteredRecords.sort(by:{ $0.warrantyEnds?.compare($1.warrantyEnds! as Date) == .orderedAscending})
@@ -605,9 +563,9 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.photoLoadingIndicator.stopAnimating()
                     cell.photoLoadingIndicator.isHidden = true
                 } else {
-                    cell.warrantyImageView.image = UIImage()
-                    cell.photoLoadingIndicator.startAnimating()
-                    cell.photoLoadingIndicator.isHidden = false
+                    cell.warrantyImageView.image = UIImage(named: "placeholder")
+                    //cell.photoLoadingIndicator.startAnimating()
+                    cell.photoLoadingIndicator.isHidden = true
                 }
             }
         } else {
@@ -625,13 +583,14 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                 let fetchedImages = CoreDataHelper.fetchImages(for: record, in: managedContext!)
                 if fetchedImages.count > 0 {
                     let recordImage = fetchedImages[0]
+                    print(recordImage)
                     cell.warrantyImageView.image = UIImage(data: recordImage.image! as Data)
                     cell.photoLoadingIndicator.stopAnimating()
                     cell.photoLoadingIndicator.isHidden = true
                 } else {
-                    cell.warrantyImageView.image = UIImage()
-                    cell.photoLoadingIndicator.startAnimating()
-                    cell.photoLoadingIndicator.isHidden = false
+                    cell.warrantyImageView.image = UIImage(named: "placeholder")
+                    //cell.photoLoadingIndicator.startAnimating()
+                    cell.photoLoadingIndicator.isHidden = true
                 }
             } else {
                 records.sort(by:{ $0.warrantyEnds?.compare($1.warrantyEnds! as Date) == .orderedAscending})
@@ -651,9 +610,9 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.photoLoadingIndicator.stopAnimating()
                     cell.photoLoadingIndicator.isHidden = true
                 } else {
-                    cell.warrantyImageView.image = UIImage()
-                    cell.photoLoadingIndicator.startAnimating()
-                    cell.photoLoadingIndicator.isHidden = false
+                    cell.warrantyImageView.image = UIImage(named: "placeholder")
+                    //cell.photoLoadingIndicator.startAnimating()
+                    cell.photoLoadingIndicator.isHidden = true
                 }
             }
             
@@ -662,6 +621,8 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         cell.warrantyImageView.contentMode = .scaleAspectFit
         cell.title.textColor = cell.tintColor
         cell.backgroundColor = UIColor(colorLiteralRed: 189, green: 195, blue: 201, alpha: 1.0)
+        cell.warrantyImageView.layer.cornerRadius = 15
+        cell.warrantyImageView.layer.masksToBounds = true
         
         lastCell = cell
         

@@ -147,33 +147,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//        let viewController : PrimaryViewController = storyboard.instantiateViewController(withIdentifier: "primaryController") as! PrimaryViewController
+//        window?.rootViewController?.show(viewController, sender: nil)
+//
+//        let notification: CKNotification =
+//            CKNotification(fromRemoteNotificationDictionary:
+//                userInfo as! [String : NSObject])
+//
+//        if (notification.notificationType ==
+//            CKNotificationType.query) {
+//
+//            let queryNotification =
+//                notification as! CKQueryNotification
+//
+//            let recordID = queryNotification.recordID
+//
+//            CloudKitHelper.fetchRecord(recordID: recordID!)
+        
+        print("Received notification!")
+        
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let viewController : PrimaryViewController = storyboard.instantiateViewController(withIdentifier: "primaryController") as! PrimaryViewController
-        window?.rootViewController?.show(viewController, sender: nil)
         
-        let notification: CKNotification =
-            CKNotification(fromRemoteNotificationDictionary:
-                userInfo as! [String : NSObject])
+        let dict = userInfo as! [String: NSObject]
+        let notification = CKNotification(fromRemoteNotificationDictionary: dict)
         
-        if (notification.notificationType ==
-            CKNotificationType.query) {
-            
-            let queryNotification =
-                notification as! CKQueryNotification
-            
-            let recordID = queryNotification.recordID
-            
-            CloudKitHelper.fetchRecord(recordID: recordID!)
-            
-//        print("Received notification!")
-//
-//        guard let viewController = self.window?.rootViewController as? PrimaryViewController else { return }
-//
-//        let dict = userInfo as! [String: NSObject]
-//        guard let notification:CKDatabaseNotification = CKNotification(fromRemoteNotificationDictionary:dict) as? CKDatabaseNotification else { return }
-//
-//        viewController.fetchChanges(in: notification.databaseScope) {
-//            completionHandler(.newData)
+        if notification.subscriptionID == "cloudkit-record-changes" {
+            viewController.handleNotification()
+            completionHandler(.newData)
         }
     }
 }
