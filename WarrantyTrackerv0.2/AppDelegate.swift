@@ -147,34 +147,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//        let viewController : PrimaryViewController = storyboard.instantiateViewController(withIdentifier: "primaryController") as! PrimaryViewController
-//        window?.rootViewController?.show(viewController, sender: nil)
-//
-//        let notification: CKNotification =
-//            CKNotification(fromRemoteNotificationDictionary:
-//                userInfo as! [String : NSObject])
-//
-//        if (notification.notificationType ==
-//            CKNotificationType.query) {
-//
-//            let queryNotification =
-//                notification as! CKQueryNotification
-//
-//            let recordID = queryNotification.recordID
-//
-//            CloudKitHelper.fetchRecord(recordID: recordID!)
-        
         print("Received notification!")
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let viewController : PrimaryViewController = storyboard.instantiateViewController(withIdentifier: "primaryController") as! PrimaryViewController
+        window?.rootViewController?.show(viewController, sender: nil)
         
         let dict = userInfo as! [String: NSObject]
         let notification = CKNotification(fromRemoteNotificationDictionary: dict)
         
-        if notification.subscriptionID == "cloudkit-record-changes" {
-            viewController.handleNotification()
+        if notification.subscriptionID == "records-subscription" {
+            
+            viewController.handleRecordNotification(notification: notification)
+            completionHandler(.newData)
+        }
+        if notification.subscriptionID == "notes-subscription" {
+            
+            viewController.handleNoteNotification(notification: notification)
+            completionHandler(.newData)
+        }
+        if notification.subscriptionID == "images-subscription" {
+            
+            viewController.handleImageNotification(notification: notification)
             completionHandler(.newData)
         }
     }

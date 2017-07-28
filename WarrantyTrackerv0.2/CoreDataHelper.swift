@@ -422,14 +422,95 @@ class CoreDataHelper {
     }
     
     static func cloudKitRecordChanged(record: CKRecord, in context: NSManagedObjectContext) {
+        let fetchedRecord = fetchRecord(with: record.recordID.recordName, in: context)
         
-        // try to find the record in coredata
-        let fetchedRecord = fetchNote(with: record.recordID.recordName, in: context)
+        fetchedRecord.dateCreated = record.value(forKey: "dateCreated") as! NSDate?
+        fetchedRecord.dateDeleted = record.value(forKey: "dateDeleted") as! NSDate?
+        fetchedRecord.daysBeforeReminder = record.value(forKey: "daysBeforeReminder") as! Int32
+        fetchedRecord.descriptionString = record.value(forKey: "descriptionString") as! String?
+        fetchedRecord.eventIdentifier = record.value(forKey: "eventIdentifier") as! String?
+        fetchedRecord.title = record.value(forKey: "title") as! String?
+        fetchedRecord.warrantyStarts = record.value(forKey: "warrantyStarts") as! NSDate?
+        fetchedRecord.warrantyEnds = record.value(forKey: "warrantyEnds") as! NSDate?
+        DispatchQueue.main.async {
+            print("Assigned simple values")
+        }
         
-        let (title, noteString) = syncToNote(record: record)
+        // Bools stored as ints on CK.  Need to be converted
+        let recentlyDeleted = record.value(forKey: "recentlyDeleted") as! Int64
+        if recentlyDeleted == 0 {
+            fetchedRecord.recentlyDeleted = false
+        } else {
+            fetchedRecord.recentlyDeleted = true
+        }
+        let expired = record.value(forKey: "expired") as! Int64
+        if expired == 0 {
+            fetchedRecord.expired = false
+        } else {
+            fetchedRecord.expired = true
+        }
+        let hasWarranty = record.value(forKey: "hasWarranty") as! Int64
+        if hasWarranty == 0 {
+            fetchedRecord.hasWarranty = false
+        } else {
+            fetchedRecord.hasWarranty = true
+        }
+        fetchedRecord.lastUpdated = Date() as NSDate?
+        fetchedRecord.recordID = record.recordID.recordName
+        do {
+            try context.save()
+            DispatchQueue.main.async {
+                print("Synced Changes to Note to Core Data")
+            }
+        } catch {
+            DispatchQueue.main.async {
+                print("Error Syncing Changes to Note to Core Data")
+            }
+            return
+        }    
+    }
+    
+    static func cloudKitRecordCreated(record: CKRecord, in context: NSManagedObjectContext) {
+        let recordEntity = NSEntityDescription.entity(forEntityName: "Record", in: context)!
+        let cdRecord = NSManagedObject(entity: recordEntity, insertInto: context) as! Record
         
-        fetchedRecord?.title = title
-        fetchedRecord?.noteString = noteString
+        cdRecord.dateCreated = record.value(forKey: "dateCreated") as! NSDate?
+        cdRecord.dateDeleted = record.value(forKey: "dateDeleted") as! NSDate?
+        cdRecord.daysBeforeReminder = record.value(forKey: "daysBeforeReminder") as! Int32
+        cdRecord.descriptionString = record.value(forKey: "descriptionString") as! String?
+        cdRecord.eventIdentifier = record.value(forKey: "eventIdentifier") as! String?
+        cdRecord.title = record.value(forKey: "title") as! String?
+        cdRecord.warrantyStarts = record.value(forKey: "warrantyStarts") as! NSDate?
+        cdRecord.warrantyEnds = record.value(forKey: "warrantyEnds") as! NSDate?
+        DispatchQueue.main.async {
+            print("Assigned simple values")
+        }
+        // CKAssets need to be converted to NSData
+        //let itemImage = result.value(forKey: "itemData") as! CKAsset
+        //record.itemImage = NSData(contentsOf: itemImage.fileURL)
+        //////let receiptImage = result.value(forKey: "receiptData") as! CKAsset
+        //record.receiptImage = NSData(contentsOf: receiptImage.fileURL)
+        // Bools stored as ints on CK.  Need to be converted
+        let recentlyDeleted = record.value(forKey: "recentlyDeleted") as! Int64
+        if recentlyDeleted == 0 {
+            cdRecord.recentlyDeleted = false
+        } else {
+            cdRecord.recentlyDeleted = true
+        }
+        let expired = record.value(forKey: "expired") as! Int64
+        if expired == 0 {
+            cdRecord.expired = false
+        } else {
+            cdRecord.expired = true
+        }
+        let hasWarranty = record.value(forKey: "hasWarranty") as! Int64
+        if hasWarranty == 0 {
+            cdRecord.hasWarranty = false
+        } else {
+            cdRecord.hasWarranty = true
+        }
+        cdRecord.lastUpdated = Date() as NSDate?
+        cdRecord.recordID = record.recordID.recordName
         
         do {
             try context.save()
@@ -442,6 +523,88 @@ class CoreDataHelper {
             }
             return
         }
+    }
+    
+    static func cloudKitRecordDeleted(record: CKRecord, in context: NSManagedObjectContext) {
+        // try to find the record in coredata
+        let fetchedRecord = fetchRecord(with: record.recordID.recordName, in: context)
+        
+        delete(record: fetchedRecord, in: context)
+    }
+    
+    static func cloudKitNoteChanged(record: CKRecord, in context: NSManagedObjectContext) {
+        // try to find the note in coredata
+        let fetchedRecord = fetchNote(with: record.recordID.recordName, in: context)
+        let (title, noteString) = syncToNote(record: record)
+        fetchedRecord?.title = title
+        fetchedRecord?.noteString = noteString
+        do {
+            try context.save()
+            DispatchQueue.main.async {
+                print("Synced Changes to Note to Core Data")
+            }
+        } catch {
+            DispatchQueue.main.async {
+                print("Error Syncing Changes to Note to Core Data")
+            }
+            return
+        }
+    }
+    
+    static func cloudKitNoteCreated(record: CKRecord, in context: NSManagedObjectContext) {
+        // try to find the record in coredata
+        let noteEntity = NSEntityDescription.entity(forEntityName: "Note", in: context)!
+        let cdNote = NSManagedObject(entity: noteEntity, insertInto: context) as! Note
+        
+        let (title, noteString) = syncToNote(record: record)
+        cdNote.title = title
+        cdNote.noteString = noteString
+        do {
+            try context.save()
+            DispatchQueue.main.async {
+                print("Synced Changes to Note to Core Data")
+            }
+        } catch {
+            DispatchQueue.main.async {
+                print("Error Syncing Changes to Note to Core Data")
+            }
+            return
+        }
+    }
+    
+    static func cloudKitNoteDeleted(record: CKRecord, in context: NSManagedObjectContext) {
+        // try to find the record in coredata
+        let fetchedRecord = fetchNote(with: record.recordID.recordName, in: context)
+
+        if fetchedRecord != nil {
+            delete(note: fetchedRecord!, in: context)
+        }
+    }
+    
+    static func cloudKitImageCreated(record: CKRecord, in context: NSManagedObjectContext) {
+        // try to find the record in coredata
+//        let fetchedRecord = fetchImage(with: record.recordID.recordName, in: context)
+//        //let (title, noteString) = syncToNote(record: record)
+//
+//        do {
+//            try context.save()
+//            DispatchQueue.main.async {
+//                print("Synced Changes to Note to Core Data")
+//            }
+//        } catch {
+//            DispatchQueue.main.async {
+//                print("Error Syncing Changes to Note to Core Data")
+//            }
+//            return
+//        }
+    }
+    
+    static func cloudKitImageDeleted(record: CKRecord, in context: NSManagedObjectContext) {
+//        let fetchedRecord = fetchImage(with: record.recordID.recordName, in: context)
+//
+//        if fetchedRecord != nil {
+//            delete(image: fetchedRecord!, in: context)
+//        }
     }
     
     static func syncToNote(record: CKRecord) -> (String?, String?) {

@@ -52,7 +52,9 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     var privateDB: CKDatabase!
     let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
     var createdCustomZone = false
-    let subscriptionID = "cloudkit-record-changes"
+    let recordsSubscriptionID = "records-subscription"
+    let notesSubscriptionID = "notes-subscription"
+    let imagesSubscriptionID = "images-subscription"
     let subscriptionSavedKey = "ckSubscriptionSaved"
     let serverChangeTokenKey = "ckServerChangeToken"
     
@@ -156,19 +158,38 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
             return
         }
         
-        let createSubscriptionOperation = self.createDatabaseSubscriptionOperation(subscriptionId: subscriptionID)
-        createSubscriptionOperation.modifySubscriptionsCompletionBlock = { (subscriptions, deletedIds, error) in
+        let createRecordsSubscriptionOperation = self.createDatabaseSubscriptionOperation(subscriptionId: recordsSubscriptionID, recordType: "Records")
+        createRecordsSubscriptionOperation.modifySubscriptionsCompletionBlock = { (subscriptions, deletedIds, error) in
             if error != nil {
                 // else custom error handling
+                print("Failed to add record subscription")
             }
         }
-        self.privateDB.add(createSubscriptionOperation)
+        let createImagesSubscriptionOperation = self.createDatabaseSubscriptionOperation(subscriptionId: imagesSubscriptionID, recordType: "Images")
+        createImagesSubscriptionOperation.modifySubscriptionsCompletionBlock = { (subscriptions, deletedIds, error) in
+            if error != nil {
+                // else custom error handling
+                print("Failed to add images subscription")
+            }
+        }
+        let createNotesSubscriptionOperation = self.createDatabaseSubscriptionOperation(subscriptionId: notesSubscriptionID, recordType: "Notes")
+        createNotesSubscriptionOperation.modifySubscriptionsCompletionBlock = { (subscriptions, deletedIds, error) in
+            if error != nil {
+                // else custom error handling
+                print("Failed to add notes subscription")
+            }
+        }
+        self.privateDB.add(createRecordsSubscriptionOperation)
+        self.privateDB.add(createImagesSubscriptionOperation)
+        self.privateDB.add(createNotesSubscriptionOperation)
         
         UserDefaults.standard.set(true, forKey: self.subscriptionSavedKey)
     }
     
-    func createDatabaseSubscriptionOperation(subscriptionId: String) -> CKModifySubscriptionsOperation {
-        let subscription = CKDatabaseSubscription.init(subscriptionID: subscriptionId)
+    func createDatabaseSubscriptionOperation(subscriptionId: String, recordType: String) -> CKModifySubscriptionsOperation {
+        let predicate = NSPredicate(value: true)
+        let subscription = CKQuerySubscription(recordType: recordType, predicate: predicate, subscriptionID: subscriptionId, options: [.firesOnRecordCreation, .firesOnRecordDeletion, .firesOnRecordUpdate])
+        //let subscription = CKDatabaseSubscription.init(subscriptionID: subscriptionId)
         
         let notificationInfo = CKNotificationInfo()
         // send a silent notification
@@ -181,7 +202,7 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         return operation
     }
     
-    public func handleNotification() {
+    public func handleRecordNotification(notification: CKNotification) {
         // Use the ChangeToken to fetch only whatever changes have occurred since the last
         // time we asked, since intermediate push notifications might have been dropped.
         var changeToken: CKServerChangeToken? = nil
@@ -197,8 +218,133 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         operation.recordChangedBlock = { record in
             DispatchQueue.main.async {
                 print(record)
+                print("I MADE IT INTO THE RECORD PLACE!!!")
             }
-            CoreDataHelper.cloudKitRecordChanged(record: record, in: self.managedContext!)
+
+            let queryNotification = notification as! CKQueryNotification
+            if queryNotification.queryNotificationReason == .recordUpdated {
+                CoreDataHelper.cloudKitRecordChanged(record: record, in: self.managedContext!)
+            } else if queryNotification.queryNotificationReason == .recordCreated {
+                CoreDataHelper.cloudKitRecordCreated(record: record, in: self.managedContext!)
+            } else {
+                CoreDataHelper.cloudKitRecordDeleted(record: record, in: self.managedContext!)
+            }
+        }
+        operation.recordZoneChangeTokensUpdatedBlock = { zoneID, changeToken, data in
+            guard let changeToken = changeToken else {
+                return
+            }
+            
+            let changeTokenData = NSKeyedArchiver.archivedData(withRootObject: changeToken)
+            UserDefaults.standard.set(changeTokenData, forKey: self.serverChangeTokenKey)
+        }
+        operation.recordZoneFetchCompletionBlock = { zoneID, changeToken, data, more, error in
+            guard error == nil else {
+                return
+            }
+            guard let changeToken = changeToken else {
+                return
+            }
+            
+            let changeTokenData = NSKeyedArchiver.archivedData(withRootObject: changeToken)
+            UserDefaults.standard.set(changeTokenData, forKey: self.serverChangeTokenKey)
+        }
+        operation.fetchRecordZoneChangesCompletionBlock = { error in
+            guard error == nil else {
+                return
+            }
+        }
+        operation.qualityOfService = .utility
+        
+        let container = CKContainer.default()
+        let db = container.privateCloudDatabase
+        db.add(operation)
+    }
+    
+    public func handleNoteNotification(notification: CKNotification) {
+        // Use the ChangeToken to fetch only whatever changes have occurred since the last
+        // time we asked, since intermediate push notifications might have been dropped.
+        var changeToken: CKServerChangeToken? = nil
+        let changeTokenData = UserDefaults.standard.data(forKey: serverChangeTokenKey)
+        if changeTokenData != nil {
+            changeToken = NSKeyedUnarchiver.unarchiveObject(with: changeTokenData!) as! CKServerChangeToken?
+        }
+        let options = CKFetchRecordZoneChangesOptions()
+        options.previousServerChangeToken = changeToken
+        let optionsMap = [zoneID: options]
+        let operation = CKFetchRecordZoneChangesOperation(recordZoneIDs: [zoneID], optionsByRecordZoneID: optionsMap)
+        operation.fetchAllChanges = true
+        operation.recordChangedBlock = { record in
+            DispatchQueue.main.async {
+                print(record)
+                print("I MADE IT INTO THE RECORD PLACE!!!")
+            }
+            
+            let queryNotification = notification as! CKQueryNotification
+            if queryNotification.queryNotificationReason == .recordUpdated {
+                CoreDataHelper.cloudKitNoteChanged(record: record, in: self.managedContext!)
+            } else if queryNotification.queryNotificationReason == .recordCreated {
+                CoreDataHelper.cloudKitNoteCreated(record: record, in: self.managedContext!)
+            } else {
+                CoreDataHelper.cloudKitNoteDeleted(record: record, in: self.managedContext!)
+            }
+        }
+        operation.recordZoneChangeTokensUpdatedBlock = { zoneID, changeToken, data in
+            guard let changeToken = changeToken else {
+                return
+            }
+            
+            let changeTokenData = NSKeyedArchiver.archivedData(withRootObject: changeToken)
+            UserDefaults.standard.set(changeTokenData, forKey: self.serverChangeTokenKey)
+        }
+        operation.recordZoneFetchCompletionBlock = { zoneID, changeToken, data, more, error in
+            guard error == nil else {
+                return
+            }
+            guard let changeToken = changeToken else {
+                return
+            }
+            
+            let changeTokenData = NSKeyedArchiver.archivedData(withRootObject: changeToken)
+            UserDefaults.standard.set(changeTokenData, forKey: self.serverChangeTokenKey)
+        }
+        operation.fetchRecordZoneChangesCompletionBlock = { error in
+            guard error == nil else {
+                return
+            }
+        }
+        operation.qualityOfService = .utility
+        
+        let container = CKContainer.default()
+        let db = container.privateCloudDatabase
+        db.add(operation)
+    }
+    
+    public func handleImageNotification(notification: CKNotification) {
+        // Use the ChangeToken to fetch only whatever changes have occurred since the last
+        // time we asked, since intermediate push notifications might have been dropped.
+        var changeToken: CKServerChangeToken? = nil
+        let changeTokenData = UserDefaults.standard.data(forKey: serverChangeTokenKey)
+        if changeTokenData != nil {
+            changeToken = NSKeyedUnarchiver.unarchiveObject(with: changeTokenData!) as! CKServerChangeToken?
+        }
+        let options = CKFetchRecordZoneChangesOptions()
+        options.previousServerChangeToken = changeToken
+        let optionsMap = [zoneID: options]
+        let operation = CKFetchRecordZoneChangesOperation(recordZoneIDs: [zoneID], optionsByRecordZoneID: optionsMap)
+        operation.fetchAllChanges = true
+        operation.recordChangedBlock = { record in
+            DispatchQueue.main.async {
+                print(record)
+                print("I MADE IT INTO THE RECORD PLACE!!!")
+            }
+            
+            let queryNotification = notification as! CKQueryNotification
+            if queryNotification.queryNotificationReason == .recordCreated {
+                CoreDataHelper.cloudKitImageCreated(record: record, in: self.managedContext!)
+            } else {
+                CoreDataHelper.cloudKitImageDeleted(record: record, in: self.managedContext!)
+            }
         }
         operation.recordZoneChangeTokensUpdatedBlock = { zoneID, changeToken, data in
             guard let changeToken = changeToken else {
@@ -254,141 +400,138 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
             let predicate = NSPredicate(value: true)
             let query = CKQuery(recordType: "Records", predicate: predicate)
             
-            privateDatabase.perform(query, inZoneWith: zoneID, completionHandler: { (results, error) in
-                if error != nil {
-                    DispatchQueue.main.async {
-                        print(error.debugDescription)
-                        self.refreshControl.endRefreshing()
-                    }
-                    return
-                } else {
-                    for result in results! {
-                        // if record id is in coredata already, sync data to that record
-                        if cdRecordIDs.contains(result.recordID.recordName) {
-                            let recordIndex = cdRecordIDs.index(of: result.recordID.recordName)
-                            let recordMatch = cdRecords[recordIndex!]
-                            
-                            // check if cloud was synced before local storage
-                            let cloudSynced = result.value(forKey: "lastSynced") as! Date
-                            let localSynced = (recordMatch.lastUpdated ?? Date().addingTimeInterval(-TimeInterval.greatestFiniteMagnitude) as NSDate) as Date
-                            DispatchQueue.main.async {
-                                print(localSynced)
-                            }
-                            if cloudSynced > localSynced {
-                                // sync from cloud to local and pop from cdRecords and cdRecordIDs arrays
-                                DispatchQueue.main.async {
-                                    print("Syncing from cloud to local")
-                                }
-                                let record = recordMatch
-                                record.dateCreated = result.value(forKey: "dateCreated") as! NSDate?
-                                record.dateDeleted = result.value(forKey: "dateDeleted") as! NSDate?
-                                record.daysBeforeReminder = result.value(forKey: "daysBeforeReminder") as! Int32
-                                record.descriptionString = result.value(forKey: "descriptionString") as! String?
-                                record.eventIdentifier = result.value(forKey: "eventIdentifier") as! String?
-                                record.title = result.value(forKey: "title") as! String?
-                                record.warrantyStarts = result.value(forKey: "warrantyStarts") as! NSDate?
-                                record.warrantyEnds = result.value(forKey: "warrantyEnds") as! NSDate?
-                                DispatchQueue.main.async {
-                                    print("Assigned simple values")
-                                }
-                                // CKAssets need to be converted to NSData
-                                //let itemImage = result.value(forKey: "itemData") as! CKAsset
-                                //record.itemImage = NSData(contentsOf: itemImage.fileURL)
-                                //////let receiptImage = result.value(forKey: "receiptData") as! CKAsset
-                                //record.receiptImage = NSData(contentsOf: receiptImage.fileURL)
-                                // Bools stored as ints on CK.  Need to be converted
-                                let recentlyDeleted = result.value(forKey: "recentlyDeleted") as! Int64
-                                if recentlyDeleted == 0 {
-                                    record.recentlyDeleted = false
-                                } else {
-                                    record.recentlyDeleted = true
-                                }
-                                let expired = result.value(forKey: "expired") as! Int64
-                                if expired == 0 {
-                                    record.expired = false
-                                } else {
-                                    record.expired = true
-                                }
-                                let hasWarranty = result.value(forKey: "hasWarranty") as! Int64
-                                if hasWarranty == 0 {
-                                    record.hasWarranty = false
-                                } else {
-                                    record.hasWarranty = true
-                                }
-                                record.lastUpdated = Date() as NSDate?
-                                record.recordID = result.recordID.recordName
-                                
-                                DispatchQueue.main.async {
-                                    print("Assigned assets and other values to " + record.recordID!)
-                                }
-                                
-                                // remove updated record from record lists so that once finished, the remainder
-                                // (those not existing on the cloud) can be synced to the cloud.
-                                cdRecords.remove(at: recordIndex!)
-                                cdRecordIDs.remove(at: recordIndex!)
-                            }
-                            
-                            // sync notes and images associated with this record to coredata if they aren't already there
-                            CoreDataHelper.importImagesFromCloudKit(associatedWith: recordMatch, in: self.managedContext!)
-                            CoreDataHelper.importNotesFromCloudKit(associatedWith: recordMatch, in: self.managedContext!)
-                            
-                            // sync any images that havent been synced to the cloud yet
-                            //CloudKitHelper.syncImagesToCloudKit(associatedWith: recordMatch, in: self.managedContext!)
-                            // ^ this should be happening automatically on image creation now.
-                            
-                        } else { // create new record from data in cloud
-                            let record = NSManagedObject(entity: recordEntity, insertInto: self.managedContext!) as! Record
-                            record.dateCreated = result.value(forKey: "dateCreated") as! NSDate?
-                            record.dateDeleted = result.value(forKey: "dateDeleted") as! NSDate?
-                            record.daysBeforeReminder = result.value(forKey: "daysBeforeReminder") as! Int32
-                            record.descriptionString = result.value(forKey: "descriptionString") as! String?
-                            record.eventIdentifier = result.value(forKey: "eventIdentifier") as! String?
-                            record.title = result.value(forKey: "title") as! String?
-                            record.warrantyStarts = result.value(forKey: "warrantyStarts") as! NSDate?
-                            record.warrantyEnds = result.value(forKey: "warrantyEnds") as! NSDate?
-                            // CKAssets need to be converted to NSData
-                            //let itemImage = result.value(forKey: "itemData") as! CKAsset
-                            //record.itemImage = NSData(contentsOf: itemImage.fileURL)
-                            //let receiptImage = result.value(forKey: "receiptData") as! CKAsset
-                            //record.receiptImage = NSData(contentsOf: receiptImage.fileURL)
-                            // Bools stored as ints on CK.  Need to be converted
-                            let recentlyDeleted = result.value(forKey: "recentlyDeleted") as! Int64
-                            if recentlyDeleted == 0 {
-                                record.recentlyDeleted = false
-                            } else {
-                                record.recentlyDeleted = true
-                            }
-                            let expired = result.value(forKey: "expired") as! Int64
-                            if expired == 0 {
-                                record.expired = false
-                            } else {
-                                record.expired = true
-                            }
-                            let hasWarranty = result.value(forKey: "hasWarranty") as! Int64
-                            if hasWarranty == 0 {
-                                record.hasWarranty = false
-                            } else {
-                                record.hasWarranty = true
-                            }
-                            record.lastUpdated = Date() as NSDate?
-                            record.recordID = result.recordID.recordName
-                            
-                            CoreDataHelper.importImagesFromCloudKit(associatedWith: record, in: self.managedContext!, tableToRefresh: self.warrantiesTableView)
-                            CoreDataHelper.importNotesFromCloudKit(associatedWith: record, in: self.managedContext!)
-                        }
-                        // Check each note and image in the cloud to check if it has been deleted
-                        self.removeRecentlyDeletedImagesAndNotes(associatedWith: result.recordID, in: self.managedContext!)
-                    }
-                    
-                    CoreDataHelper.save(context: self.managedContext!)
-                    DispatchQueue.main.async {
-                        let fetchedRecords = CoreDataHelper.fetchAllRecords(in: self.managedContext!)
-                        self.checkExpiryAndDeletedDates(for: fetchedRecords, context: self.managedContext!)
-                        self.refreshControl.endRefreshing()
-                        self.warrantiesTableView.reloadData()
-                    }
-                }
-            })
+            print("HANDLING REFRESH !")
+//            privateDatabase.perform(query, inZoneWith: zoneID, completionHandler: { (results, error) in
+//                if error != nil {
+//                    DispatchQueue.main.async {
+//                        print(error.debugDescription)
+//                        self.refreshControl.endRefreshing()
+//                    }
+//                    return
+//                } else {
+//                    DispatchQueue.main.async {
+//                        print("HANDLING REFRESH 2")
+//                    }
+//                    for result in results! {
+//                        // if record id is in coredata already, sync data to that record
+//                        if cdRecordIDs.contains(result.recordID.recordName) {
+//                            DispatchQueue.main.async {
+//                                print("HANDLING REFRESH 3")
+//                            }
+//                            let recordIndex = cdRecordIDs.index(of: result.recordID.recordName)
+//                            let recordMatch = cdRecords[recordIndex!]
+//
+//                            // check if cloud was synced before local storage
+//                            let cloudSynced = result.value(forKey: "lastSynced") as! Date
+//                            let localSynced = (recordMatch.lastUpdated ?? Date().addingTimeInterval(-TimeInterval.greatestFiniteMagnitude) as NSDate) as Date
+//                            DispatchQueue.main.async {
+//                                print(localSynced)
+//                            }
+//                            if cloudSynced > localSynced {
+//                                // sync from cloud to local and pop from cdRecords and cdRecordIDs arrays
+//                                DispatchQueue.main.async {
+//                                    print("Syncing from cloud to local")
+//                                }
+//                                let record = recordMatch
+//                                record.dateCreated = result.value(forKey: "dateCreated") as! NSDate?
+//                                record.dateDeleted = result.value(forKey: "dateDeleted") as! NSDate?
+//                                record.daysBeforeReminder = result.value(forKey: "daysBeforeReminder") as! Int32
+//                                record.descriptionString = result.value(forKey: "descriptionString") as! String?
+//                                record.eventIdentifier = result.value(forKey: "eventIdentifier") as! String?
+//                                record.title = result.value(forKey: "title") as! String?
+//                                record.warrantyStarts = result.value(forKey: "warrantyStarts") as! NSDate?
+//                                record.warrantyEnds = result.value(forKey: "warrantyEnds") as! NSDate?
+//                                DispatchQueue.main.async {
+//                                    print("Assigned simple values")
+//                                }
+//
+//                                let recentlyDeleted = result.value(forKey: "recentlyDeleted") as! Int64
+//                                if recentlyDeleted == 0 {
+//                                    record.recentlyDeleted = false
+//                                } else {
+//                                    record.recentlyDeleted = true
+//                                }
+//                                let expired = result.value(forKey: "expired") as! Int64
+//                                if expired == 0 {
+//                                    record.expired = false
+//                                } else {
+//                                    record.expired = true
+//                                }
+//                                let hasWarranty = result.value(forKey: "hasWarranty") as! Int64
+//                                if hasWarranty == 0 {
+//                                    record.hasWarranty = false
+//                                } else {
+//                                    record.hasWarranty = true
+//                                }
+//                                record.lastUpdated = Date() as NSDate?
+//                                record.recordID = result.recordID.recordName
+//
+//                                DispatchQueue.main.async {
+//                                    print("Assigned assets and other values to " + record.recordID!)
+//                                }
+//
+//                                // remove updated record from record lists so that once finished, the remainder
+//                                // (those not existing on the cloud) can be synced to the cloud.
+//                                cdRecords.remove(at: recordIndex!)
+//                                cdRecordIDs.remove(at: recordIndex!)
+//                            }
+//
+//                            // sync notes and images associated with this record to coredata if they aren't already there
+//                            CoreDataHelper.importImagesFromCloudKit(associatedWith: recordMatch, in: self.managedContext!)
+//                            CoreDataHelper.importNotesFromCloudKit(associatedWith: recordMatch, in: self.managedContext!)
+//
+//                        } else { // create new record from data in cloud
+//                            DispatchQueue.main.async {
+//                                print("HANDLING REFRESH 4")
+//                            }
+//                            let record = NSManagedObject(entity: recordEntity, insertInto: self.managedContext!) as! Record
+//                            record.dateCreated = result.value(forKey: "dateCreated") as! NSDate?
+//                            record.dateDeleted = result.value(forKey: "dateDeleted") as! NSDate?
+//                            record.daysBeforeReminder = result.value(forKey: "daysBeforeReminder") as! Int32
+//                            record.descriptionString = result.value(forKey: "descriptionString") as! String?
+//                            record.eventIdentifier = result.value(forKey: "eventIdentifier") as! String?
+//                            record.title = result.value(forKey: "title") as! String?
+//                            record.warrantyStarts = result.value(forKey: "warrantyStarts") as! NSDate?
+//                            record.warrantyEnds = result.value(forKey: "warrantyEnds") as! NSDate?
+//
+//                            // Bools stored as ints on CK.  Need to be converted
+//                            let recentlyDeleted = result.value(forKey: "recentlyDeleted") as! Int64
+//                            if recentlyDeleted == 0 {
+//                                record.recentlyDeleted = false
+//                            } else {
+//                                record.recentlyDeleted = true
+//                            }
+//                            let expired = result.value(forKey: "expired") as! Int64
+//                            if expired == 0 {
+//                                record.expired = false
+//                            } else {
+//                                record.expired = true
+//                            }
+//                            let hasWarranty = result.value(forKey: "hasWarranty") as! Int64
+//                            if hasWarranty == 0 {
+//                                record.hasWarranty = false
+//                            } else {
+//                                record.hasWarranty = true
+//                            }
+//                            record.lastUpdated = Date() as NSDate?
+//                            record.recordID = result.recordID.recordName
+//
+//                            CoreDataHelper.importImagesFromCloudKit(associatedWith: record, in: self.managedContext!, tableToRefresh: self.warrantiesTableView)
+//                            CoreDataHelper.importNotesFromCloudKit(associatedWith: record, in: self.managedContext!)
+//                        }
+//                        // Check each note and image in the cloud to check if it has been deleted
+//                        self.removeRecentlyDeletedImagesAndNotes(associatedWith: result.recordID, in: self.managedContext!)
+//                    }
+//
+//                    CoreDataHelper.save(context: self.managedContext!)
+//                    DispatchQueue.main.async {
+//                        let fetchedRecords = CoreDataHelper.fetchAllRecords(in: self.managedContext!)
+//                        self.checkExpiryAndDeletedDates(for: fetchedRecords, context: self.managedContext!)
+//                        self.refreshControl.endRefreshing()
+//                        self.warrantiesTableView.reloadData()
+//                    }
+//                }
+//            })
         } else {
             // let user know they don't have a connection
             let alertController = UIAlertController(title: "Destructive", message: "Simple alertView demo with Destructive and Ok.", preferredStyle: UIAlertControllerStyle.alert) //Replace UIAlertControllerStyle.Alert by UIAlertControllerStyle.alert
