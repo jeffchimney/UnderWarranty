@@ -218,12 +218,20 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         operation.recordChangedBlock = { record in
             DispatchQueue.main.async {
                 print(record)
-                print("I MADE IT INTO THE RECORD PLACE!!!")
+                print(record.value(forKey: "title"))
+                print(record.value(forKey: "descriptionString"))
+                print(record.value(forKey: "daysBeforeReminder"))
+                print(record.value(forKey: "eventIdentifier"))
+                print(record.value(forKey: "expired"))
+                print(record.value(forKey: "hasWarranty"))
+                print(record.value(forKey: "recentlyDeleted"))
+                print(record.value(forKey: "warrantyStarts"))
+                print(record.value(forKey: "warrantyEnds"))
             }
 
             let queryNotification = notification as! CKQueryNotification
             if queryNotification.queryNotificationReason == .recordUpdated {
-                CoreDataHelper.cloudKitRecordChanged(record: record, in: self.managedContext!)
+                CoreDataHelper.cloudKitRecordChanged(record: record, in: self.managedContext!, reload: self.warrantiesTableView)
             } else if queryNotification.queryNotificationReason == .recordCreated {
                 CoreDataHelper.cloudKitRecordCreated(record: record, in: self.managedContext!)
             } else {
@@ -380,31 +388,32 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     func handleRefresh(refreshControl: UIRefreshControl) {
         // check if the user is signed in, if not then there is nothing to refresh.
             // check what the current connection is.  If wifi, refresh.  If data, and sync by data is enabled, refresh.  Otherwise don't.
-        if !refreshControl.isRefreshing {
-            refreshControl.beginRefreshing()
-        }
-        let conn = UserDefaultsHelper.currentConnection()
-        if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
-            // coredata
-            let recordEntity = NSEntityDescription.entity(forEntityName: "Record", in: managedContext!)!
-            
-            var cdRecords = CoreDataHelper.fetchAllRecords(in: managedContext!) // loadAssociatedCDRecords()
-            var cdRecordIDs: [String] = []
-            for record in cdRecords {
-                print(record.recordID! + " " + record.title!)
-                cdRecordIDs.append(record.recordID!)
-            }
-            
-            // cloudkit
-            let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
-            let predicate = NSPredicate(value: true)
-            let query = CKQuery(recordType: "Records", predicate: predicate)
-            
-            print("HANDLING REFRESH !")
+//        if !refreshControl.isRefreshing {
+//            refreshControl.beginRefreshing()
+//        }
+//        let conn = UserDefaultsHelper.currentConnection()
+//        if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
+//            // coredata
+//            let recordEntity = NSEntityDescription.entity(forEntityName: "Record", in: managedContext!)!
+//
+//            var cdRecords = CoreDataHelper.fetchAllRecords(in: managedContext!) // loadAssociatedCDRecords()
+//            var cdRecordIDs: [String] = []
+//            for record in cdRecords {
+//                print(record.recordID! + " " + record.title!)
+//                cdRecordIDs.append(record.recordID!)
+//            }
+//
+//            // cloudkit
+//            let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
+//            let predicate = NSPredicate(value: true)
+//            let query = CKQuery(recordType: "Records", predicate: predicate)
+//
+//            print("HANDLING REFRESH !")
 //            privateDatabase.perform(query, inZoneWith: zoneID, completionHandler: { (results, error) in
 //                if error != nil {
 //                    DispatchQueue.main.async {
 //                        print(error.debugDescription)
+//                        print("SOMETHING BAD HAPPENED")
 //                        self.refreshControl.endRefreshing()
 //                    }
 //                    return
@@ -474,6 +483,10 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
 //                                // (those not existing on the cloud) can be synced to the cloud.
 //                                cdRecords.remove(at: recordIndex!)
 //                                cdRecordIDs.remove(at: recordIndex!)
+//
+//                                DispatchQueue.main.async {
+//                                    print("HANDLING REFRESH 5")
+//                                }
 //                            }
 //
 //                            // sync notes and images associated with this record to coredata if they aren't already there
@@ -532,26 +545,26 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
 //                    }
 //                }
 //            })
-        } else {
-            // let user know they don't have a connection
-            let alertController = UIAlertController(title: "Destructive", message: "Simple alertView demo with Destructive and Ok.", preferredStyle: UIAlertControllerStyle.alert) //Replace UIAlertControllerStyle.Alert by UIAlertControllerStyle.alert
-            let settingsAction = UIAlertAction(title: "Settings", style: UIAlertActionStyle.default) {
-                (result : UIAlertAction) -> Void in
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let settingsController : SettingsTableViewController = storyboard.instantiateViewController(withIdentifier: "settingsController") as! SettingsTableViewController
-                
-                self.navigationController?.pushViewController(settingsController, animated: true)
-            }
-            
-            // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.cancel) {
-                (result : UIAlertAction) -> Void in
-            }
-            
-            alertController.addAction(settingsAction)
-            alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
-        }
+//        } else {
+//            // let user know they don't have a connection
+//            let alertController = UIAlertController(title: "Destructive", message: "Simple alertView demo with Destructive and Ok.", preferredStyle: UIAlertControllerStyle.alert) //Replace UIAlertControllerStyle.Alert by UIAlertControllerStyle.alert
+//            let settingsAction = UIAlertAction(title: "Settings", style: UIAlertActionStyle.default) {
+//                (result : UIAlertAction) -> Void in
+//                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//                let settingsController : SettingsTableViewController = storyboard.instantiateViewController(withIdentifier: "settingsController") as! SettingsTableViewController
+//
+//                self.navigationController?.pushViewController(settingsController, animated: true)
+//            }
+//
+//            // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
+//            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.cancel) {
+//                (result : UIAlertAction) -> Void in
+//            }
+//
+//            alertController.addAction(settingsAction)
+//            alertController.addAction(okAction)
+//            self.present(alertController, animated: true, completion: nil)
+//        }
     }
     
     func removeRecentlyDeletedImagesAndNotes(associatedWith: CKRecordID, in context: NSManagedObjectContext) {

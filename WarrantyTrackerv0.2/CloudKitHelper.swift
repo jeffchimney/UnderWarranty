@@ -13,7 +13,7 @@ import CoreData
 
 class CloudKitHelper {
     
-    static func fetchRecord(recordID: CKRecordID) {
+    static func fetchAndUpdateLocalRecord(recordID: CKRecordID, in context: NSManagedObjectContext) {
         let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
         privateDatabase.fetch(withRecordID: recordID, completionHandler: ({record, error in
             if let err = error {
@@ -22,6 +22,53 @@ class CloudKitHelper {
                 }
             } else {
                 // found record
+                print(record!)
+                let fetchedRecord = CoreDataHelper.fetchRecord(with: record!.recordID.recordName, in: context)
+                
+                //fetchedRecord.dateCreated = record.value(forKey: "dateCreated") as! NSDate?
+                fetchedRecord.dateDeleted = record?.value(forKey: "dateDeleted") as! NSDate?
+                fetchedRecord.daysBeforeReminder = record?.value(forKey: "daysBeforeReminder") as! Int32
+                fetchedRecord.descriptionString = record?.value(forKey: "descriptionString") as! String?
+                fetchedRecord.eventIdentifier = record?.value(forKey: "eventIdentifier") as! String?
+                fetchedRecord.title = record?.value(forKey: "title") as! String?
+                fetchedRecord.warrantyStarts = record?.value(forKey: "warrantyStarts") as! NSDate?
+                fetchedRecord.warrantyEnds = record?.value(forKey: "warrantyEnds") as! NSDate?
+                DispatchQueue.main.async {
+                    print("Assigned simple values")
+                }
+                
+                // Bools stored as ints on CK.  Need to be converted
+                let recentlyDeleted = record?.value(forKey: "recentlyDeleted") as! Int64
+                if recentlyDeleted == 0 {
+                    fetchedRecord.recentlyDeleted = false
+                } else {
+                    fetchedRecord.recentlyDeleted = true
+                }
+                let expired = record?.value(forKey: "expired") as! Int64
+                if expired == 0 {
+                    fetchedRecord.expired = false
+                } else {
+                    fetchedRecord.expired = true
+                }
+                let hasWarranty = record?.value(forKey: "hasWarranty") as! Int64
+                if hasWarranty == 0 {
+                    fetchedRecord.hasWarranty = false
+                } else {
+                    fetchedRecord.hasWarranty = true
+                }
+                fetchedRecord.lastUpdated = Date() as NSDate?
+                fetchedRecord.recordID = record?.recordID.recordName
+                do {
+                    try context.save()
+                    DispatchQueue.main.async {
+                        print("Synced Changes to Note to Core Data")
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        print("Error Syncing Changes to Note to Core Data")
+                    }
+                    return
+                }
             }
         }))
     }
@@ -36,17 +83,22 @@ class CloudKitHelper {
             if error != nil {
                 print("Error retrieving from cloudkit")
             } else {
-                    
                 let ckRecord = CKRecord(recordType: "Records", recordID: CKRecordID(recordName: cdRecord.recordID!, zoneID: zoneID))
+                
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "MMM d, yyyy"
+                
+                let startDate = dateFormatter.string(from: cdRecord.warrantyStarts! as Date)
+                let endDate = dateFormatter.string(from: cdRecord.warrantyEnds! as Date)
                 
                 ckRecord.setObject(cdRecord.title! as CKRecordValue?, forKey: "title")
                 ckRecord.setObject(cdRecord.descriptionString! as CKRecordValue?, forKey: "descriptionString")
-                ckRecord.setObject(cdRecord.warrantyStarts, forKey: "warrantyStarts")
-                ckRecord.setObject(cdRecord.warrantyEnds, forKey: "warrantyEnds")
+                ckRecord.setObject(startDate as CKRecordValue, forKey: "warrantyStarts")
+                ckRecord.setObject(endDate as CKRecordValue, forKey: "warrantyEnds")
                 ckRecord.setObject(cdRecord.eventIdentifier! as CKRecordValue, forKey: "eventIdentifier")
                 ckRecord.setObject(cdRecord.daysBeforeReminder as CKRecordValue?, forKey: "daysBeforeReminder")
                 ckRecord.setObject(cdRecord.hasWarranty as CKRecordValue?, forKey: "hasWarranty")
-                ckRecord.setObject(cdRecord.dateCreated as CKRecordValue?, forKey: "dateCreated")
+                //ckRecord.setObject(cdRecord.dateCreated as CKRecordValue?, forKey: "dateCreated")
                 ckRecord.setObject(cdRecord.recentlyDeleted as CKRecordValue?, forKey: "recentlyDeleted")
                 ckRecord.setObject(cdRecord.expired as CKRecordValue?, forKey: "expired")
                 let syncedDate = Date()
@@ -85,13 +137,16 @@ class CloudKitHelper {
                 if (results?.count)! > 0 {
                     let ckRecord = (results?[0])!
                     
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "MMM d, yyyy"
+                    
                     ckRecord.setObject(cdRecord.title! as CKRecordValue?, forKey: "title")
                     ckRecord.setObject(cdRecord.descriptionString! as CKRecordValue?, forKey: "descriptionString")
-                    ckRecord.setObject(cdRecord.warrantyStarts, forKey: "warrantyStarts")
-                    ckRecord.setObject(cdRecord.warrantyEnds, forKey: "warrantyEnds")
+                    ckRecord.setObject(dateFormatter.string(from: cdRecord.warrantyStarts! as Date) as CKRecordValue, forKey: "warrantyStarts")
+                    ckRecord.setObject(dateFormatter.string(from: cdRecord.warrantyEnds! as Date) as CKRecordValue, forKey: "warrantyEnds")
                     ckRecord.setObject(cdRecord.daysBeforeReminder as CKRecordValue?, forKey: "daysBeforeReminder")
                     ckRecord.setObject(cdRecord.hasWarranty as CKRecordValue?, forKey: "hasWarranty")
-                    ckRecord.setObject(cdRecord.dateCreated as CKRecordValue?, forKey: "dateCreated")
+                    //ckRecord.setObject(cdRecord.dateCreated as CKRecordValue?, forKey: "dateCreated")
                     ckRecord.setObject(cdRecord.recentlyDeleted as CKRecordValue?, forKey: "recentlyDeleted")
                     ckRecord.setObject(cdRecord.expired as CKRecordValue?, forKey: "expired")
                     let syncedDate = Date()

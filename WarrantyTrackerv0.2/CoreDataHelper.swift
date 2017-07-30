@@ -421,17 +421,21 @@ class CoreDataHelper {
         })
     }
     
-    static func cloudKitRecordChanged(record: CKRecord, in context: NSManagedObjectContext) {
+    static func cloudKitRecordChanged(record: CKRecord, in context: NSManagedObjectContext, reload: UITableView) {
+        //CloudKitHelper.fetchAndUpdateLocalRecord(recordID: record.recordID, in: context)
         let fetchedRecord = fetchRecord(with: record.recordID.recordName, in: context)
         
-        fetchedRecord.dateCreated = record.value(forKey: "dateCreated") as! NSDate?
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM d, yyyy"
+        
+        //fetchedRecord.dateCreated = record.value(forKey: "dateCreated") as! NSDate?
         fetchedRecord.dateDeleted = record.value(forKey: "dateDeleted") as! NSDate?
         fetchedRecord.daysBeforeReminder = record.value(forKey: "daysBeforeReminder") as! Int32
         fetchedRecord.descriptionString = record.value(forKey: "descriptionString") as! String?
         fetchedRecord.eventIdentifier = record.value(forKey: "eventIdentifier") as! String?
         fetchedRecord.title = record.value(forKey: "title") as! String?
-        fetchedRecord.warrantyStarts = record.value(forKey: "warrantyStarts") as! NSDate?
-        fetchedRecord.warrantyEnds = record.value(forKey: "warrantyEnds") as! NSDate?
+        fetchedRecord.warrantyStarts = dateFormatter.date(from: (record.value(forKey: "warrantyStarts") as! String))! as NSDate
+        fetchedRecord.warrantyEnds = dateFormatter.date(from: (record.value(forKey: "warrantyEnds") as! String))! as NSDate
         DispatchQueue.main.async {
             print("Assigned simple values")
         }
@@ -467,7 +471,10 @@ class CoreDataHelper {
                 print("Error Syncing Changes to Note to Core Data")
             }
             return
-        }    
+        }
+        DispatchQueue.main.async {
+            reload.reloadData()
+        }
     }
     
     static func cloudKitRecordCreated(record: CKRecord, in context: NSManagedObjectContext) {
