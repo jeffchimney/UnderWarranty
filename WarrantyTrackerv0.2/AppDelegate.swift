@@ -149,26 +149,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print("Received notification!")
         
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let viewController : PrimaryViewController = storyboard.instantiateViewController(withIdentifier: "primaryController") as! PrimaryViewController
-        window?.rootViewController?.show(viewController, sender: nil)
+        //let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        //let viewController : PrimaryViewController = storyboard.instantiateViewController(withIdentifier: "primaryController") as! PrimaryViewController
+        //window?.rootViewController?.show(viewController, sender: nil)
         
         let dict = userInfo as! [String: NSObject]
         let notification = CKNotification(fromRemoteNotificationDictionary: dict)
         
         if notification.subscriptionID == "records-subscription" {
             
-            viewController.handleRecordNotification(notification: notification)
+            PrimaryViewController.handleRecordNotification(notification: notification)
             completionHandler(.newData)
         }
         if notification.subscriptionID == "notes-subscription" {
             
-            viewController.handleNoteNotification(notification: notification)
+            PrimaryViewController.handleNoteNotification(notification: notification)
             completionHandler(.newData)
         }
         if notification.subscriptionID == "images-subscription" {
             
-            viewController.handleImageNotification(notification: notification)
+            PrimaryViewController.handleImageNotification(notification: notification)
             completionHandler(.newData)
         }
     }

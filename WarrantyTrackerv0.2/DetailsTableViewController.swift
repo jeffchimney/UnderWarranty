@@ -527,8 +527,8 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
         
         let fetchedRecord = CoreDataHelper.fetchRecord(with: record.recordID!, in: managedContext)
         
-        fetchedRecord.recentlyDeleted = true
-        fetchedRecord.dateDeleted = Date() as NSDate?
+        fetchedRecord!.recentlyDeleted = true
+        fetchedRecord!.dateDeleted = Date() as NSDate?
         
         do {
             try managedContext.save()

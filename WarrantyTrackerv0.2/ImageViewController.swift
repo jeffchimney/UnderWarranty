@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class ImageViewController: UIViewController {
+class ImageViewController: UIViewController, UIScrollViewDelegate {
     
     var image: UIImage!
     var imageIndex: Int!
@@ -17,6 +17,7 @@ class ImageViewController: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var deleteButton: UIBarButtonItem!
+    @IBOutlet weak var scrollView: UIScrollView!
     
     weak var deleteImageDelegate: EditImageDelegate?
     
@@ -26,6 +27,11 @@ class ImageViewController: UIViewController {
         imageView.contentMode = .scaleAspectFit
         imageView.image = image
         // remove delete button
+        
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 6.0
+        scrollView.delegate = self
+        
         deleteButton.isEnabled = false
         if isEditingRecord{
             // show delete button
@@ -72,5 +78,9 @@ class ImageViewController: UIViewController {
         } else {
             return []
         }
+    }
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return imageView
     }
 }

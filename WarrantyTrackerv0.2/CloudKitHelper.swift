@@ -26,13 +26,13 @@ class CloudKitHelper {
                 let fetchedRecord = CoreDataHelper.fetchRecord(with: record!.recordID.recordName, in: context)
                 
                 //fetchedRecord.dateCreated = record.value(forKey: "dateCreated") as! NSDate?
-                fetchedRecord.dateDeleted = record?.value(forKey: "dateDeleted") as! NSDate?
-                fetchedRecord.daysBeforeReminder = record?.value(forKey: "daysBeforeReminder") as! Int32
-                fetchedRecord.descriptionString = record?.value(forKey: "descriptionString") as! String?
-                fetchedRecord.eventIdentifier = record?.value(forKey: "eventIdentifier") as! String?
-                fetchedRecord.title = record?.value(forKey: "title") as! String?
-                fetchedRecord.warrantyStarts = record?.value(forKey: "warrantyStarts") as! NSDate?
-                fetchedRecord.warrantyEnds = record?.value(forKey: "warrantyEnds") as! NSDate?
+                fetchedRecord!.dateDeleted = record?.value(forKey: "dateDeleted") as! NSDate?
+                fetchedRecord!.daysBeforeReminder = record?.value(forKey: "daysBeforeReminder") as! Int32
+                fetchedRecord!.descriptionString = record?.value(forKey: "descriptionString") as! String?
+                fetchedRecord!.eventIdentifier = record?.value(forKey: "eventIdentifier") as! String?
+                fetchedRecord!.title = record?.value(forKey: "title") as! String?
+                fetchedRecord!.warrantyStarts = record?.value(forKey: "warrantyStarts") as! NSDate?
+                fetchedRecord!.warrantyEnds = record?.value(forKey: "warrantyEnds") as! NSDate?
                 DispatchQueue.main.async {
                     print("Assigned simple values")
                 }
@@ -40,24 +40,24 @@ class CloudKitHelper {
                 // Bools stored as ints on CK.  Need to be converted
                 let recentlyDeleted = record?.value(forKey: "recentlyDeleted") as! Int64
                 if recentlyDeleted == 0 {
-                    fetchedRecord.recentlyDeleted = false
+                    fetchedRecord!.recentlyDeleted = false
                 } else {
-                    fetchedRecord.recentlyDeleted = true
+                    fetchedRecord!.recentlyDeleted = true
                 }
                 let expired = record?.value(forKey: "expired") as! Int64
                 if expired == 0 {
-                    fetchedRecord.expired = false
+                    fetchedRecord!.expired = false
                 } else {
-                    fetchedRecord.expired = true
+                    fetchedRecord!.expired = true
                 }
                 let hasWarranty = record?.value(forKey: "hasWarranty") as! Int64
                 if hasWarranty == 0 {
-                    fetchedRecord.hasWarranty = false
+                    fetchedRecord!.hasWarranty = false
                 } else {
-                    fetchedRecord.hasWarranty = true
+                    fetchedRecord!.hasWarranty = true
                 }
-                fetchedRecord.lastUpdated = Date() as NSDate?
-                fetchedRecord.recordID = record?.recordID.recordName
+                fetchedRecord!.lastUpdated = Date() as NSDate?
+                fetchedRecord!.recordID = record?.recordID.recordName
                 do {
                     try context.save()
                     DispatchQueue.main.async {
@@ -98,14 +98,14 @@ class CloudKitHelper {
                 ckRecord.setObject(cdRecord.eventIdentifier! as CKRecordValue, forKey: "eventIdentifier")
                 ckRecord.setObject(cdRecord.daysBeforeReminder as CKRecordValue?, forKey: "daysBeforeReminder")
                 ckRecord.setObject(cdRecord.hasWarranty as CKRecordValue?, forKey: "hasWarranty")
-                //ckRecord.setObject(cdRecord.dateCreated as CKRecordValue?, forKey: "dateCreated")
                 ckRecord.setObject(cdRecord.recentlyDeleted as CKRecordValue?, forKey: "recentlyDeleted")
                 ckRecord.setObject(cdRecord.expired as CKRecordValue?, forKey: "expired")
                 let syncedDate = Date()
                 ckRecord.setObject(syncedDate as CKRecordValue?, forKey: "lastSynced")
                 
                 if cdRecord.recentlyDeleted {
-                    ckRecord.setObject(cdRecord.dateDeleted as CKRecordValue?, forKey: "dateDeleted")
+                    let dateDeleted = dateFormatter.string(from: cdRecord.dateDeleted! as Date)
+                    ckRecord.setObject(dateDeleted as CKRecordValue?, forKey: "dateDeleted")
                 }
                 
                 privateDatabase.save(ckRecord, completionHandler: { (record, error) in
@@ -146,14 +146,13 @@ class CloudKitHelper {
                     ckRecord.setObject(dateFormatter.string(from: cdRecord.warrantyEnds! as Date) as CKRecordValue, forKey: "warrantyEnds")
                     ckRecord.setObject(cdRecord.daysBeforeReminder as CKRecordValue?, forKey: "daysBeforeReminder")
                     ckRecord.setObject(cdRecord.hasWarranty as CKRecordValue?, forKey: "hasWarranty")
-                    //ckRecord.setObject(cdRecord.dateCreated as CKRecordValue?, forKey: "dateCreated")
                     ckRecord.setObject(cdRecord.recentlyDeleted as CKRecordValue?, forKey: "recentlyDeleted")
                     ckRecord.setObject(cdRecord.expired as CKRecordValue?, forKey: "expired")
                     let syncedDate = Date()
                     ckRecord.setObject(syncedDate as CKRecordValue?, forKey: "lastSynced")
                     
                     if cdRecord.recentlyDeleted {
-                        ckRecord.setObject(cdRecord.dateDeleted as CKRecordValue?, forKey: "dateDeleted")
+                        ckRecord.setObject(dateFormatter.string(from: cdRecord.dateDeleted! as Date) as CKRecordValue, forKey: "dateDeleted")
                     }
                     
                     privateDatabase.save(ckRecord, completionHandler: { (record, error) in

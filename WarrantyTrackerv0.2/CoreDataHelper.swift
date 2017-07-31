@@ -31,21 +31,43 @@ class CoreDataHelper {
         return recordList
     }
     
-    static func fetchRecord(with id: String, in context: NSManagedObjectContext) -> Record {
+//    static func fetchRecord(with id: String, in context: NSManagedObjectContext) -> Record {
+//        let predicate = NSPredicate(format: "recordID = %@", id)
+//
+//        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Record")
+//        fetchRequest.predicate = predicate
+//
+//        var returnedRecords: [NSManagedObject] = []
+//        do {
+//            returnedRecords = try context.fetch(fetchRequest)
+//        } catch let error as NSError {
+//            print("Could not fetch. \(error), \(error.userInfo)")
+//        }
+//        let record = returnedRecords[0] as! Record
+//
+//        return record
+//    }
+    
+    static func fetchRecord(with id: String, in context: NSManagedObjectContext) -> Record? {
         let predicate = NSPredicate(format: "recordID = %@", id)
         
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Record")
         fetchRequest.predicate = predicate
-
+        
         var returnedRecords: [NSManagedObject] = []
         do {
             returnedRecords = try context.fetch(fetchRequest)
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
-        let record = returnedRecords[0] as! Record
-
-        return record
+        
+        if returnedRecords.count > 0 {
+            let record = returnedRecords[0] as! Record
+            
+            return record
+        } else {
+            return nil
+        }
     }
     
     static func fetchImage(with id: String, in context: NSManagedObjectContext) -> Image? {
@@ -271,6 +293,39 @@ class CoreDataHelper {
         }
     }
     
+    static func setRecentlyDeletedTrue(for record: Record, in context: NSManagedObjectContext) {
+        var returnedRecords: [NSManagedObject] = []
+        
+        let fetchRequest =
+            NSFetchRequest<NSManagedObject>(entityName: "Record")
+        
+        do {
+            returnedRecords = try context.fetch(fetchRequest)
+        } catch let error as NSError {
+            print("Could not fetch. \(error), \(error.userInfo)")
+        }
+        
+        for thisRecord in returnedRecords {
+            if record == thisRecord {
+                let thisRecord = thisRecord as! Record
+                thisRecord.recentlyDeleted = true
+                do {
+                    try context.save()
+                    // check what the current connection is.  If wifi, refresh.  If data, and sync by data is enabled, refresh.
+                    let conn = UserDefaultsHelper.currentConnection()
+                    if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
+                        CloudKitHelper.updateRecordInCloudKit(cdRecord: record, context: context)
+                    } else {
+                        // queue up the record to sync when you have a good connection
+                        UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
+                    }
+                } catch {
+                    print("Error deleting record")
+                }
+            }
+        }
+    }
+    
     static func importNotesFromCloudKit(associatedWith: Record, in context: NSManagedObjectContext) {
         let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
         let publicDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
@@ -421,21 +476,19 @@ class CoreDataHelper {
         })
     }
     
-    static func cloudKitRecordChanged(record: CKRecord, in context: NSManagedObjectContext, reload: UITableView) {
+    static func cloudKitRecordChanged(record: CKRecord, in context: NSManagedObjectContext) {//, reload: UITableView) {
         //CloudKitHelper.fetchAndUpdateLocalRecord(recordID: record.recordID, in: context)
         let fetchedRecord = fetchRecord(with: record.recordID.recordName, in: context)
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMM d, yyyy"
         
-        //fetchedRecord.dateCreated = record.value(forKey: "dateCreated") as! NSDate?
-        fetchedRecord.dateDeleted = record.value(forKey: "dateDeleted") as! NSDate?
-        fetchedRecord.daysBeforeReminder = record.value(forKey: "daysBeforeReminder") as! Int32
-        fetchedRecord.descriptionString = record.value(forKey: "descriptionString") as! String?
-        fetchedRecord.eventIdentifier = record.value(forKey: "eventIdentifier") as! String?
-        fetchedRecord.title = record.value(forKey: "title") as! String?
-        fetchedRecord.warrantyStarts = dateFormatter.date(from: (record.value(forKey: "warrantyStarts") as! String))! as NSDate
-        fetchedRecord.warrantyEnds = dateFormatter.date(from: (record.value(forKey: "warrantyEnds") as! String))! as NSDate
+        fetchedRecord!.daysBeforeReminder = record.value(forKey: "daysBeforeReminder") as! Int32
+        fetchedRecord!.descriptionString = record.value(forKey: "descriptionString") as! String?
+        fetchedRecord!.eventIdentifier = record.value(forKey: "eventIdentifier") as! String?
+        fetchedRecord!.title = record.value(forKey: "title") as! String?
+        fetchedRecord!.warrantyStarts = dateFormatter.date(from: (record.value(forKey: "warrantyStarts") as! String))! as NSDate
+        fetchedRecord!.warrantyEnds = dateFormatter.date(from: (record.value(forKey: "warrantyEnds") as! String))! as NSDate
         DispatchQueue.main.async {
             print("Assigned simple values")
         }
@@ -443,24 +496,25 @@ class CoreDataHelper {
         // Bools stored as ints on CK.  Need to be converted
         let recentlyDeleted = record.value(forKey: "recentlyDeleted") as! Int64
         if recentlyDeleted == 0 {
-            fetchedRecord.recentlyDeleted = false
+            fetchedRecord!.recentlyDeleted = false
         } else {
-            fetchedRecord.recentlyDeleted = true
+            fetchedRecord!.recentlyDeleted = true
+            fetchedRecord!.dateDeleted = dateFormatter.date(from: (record.value(forKey: "dateDeleted") as! String))! as NSDate
         }
         let expired = record.value(forKey: "expired") as! Int64
         if expired == 0 {
-            fetchedRecord.expired = false
+            fetchedRecord!.expired = false
         } else {
-            fetchedRecord.expired = true
+            fetchedRecord!.expired = true
         }
         let hasWarranty = record.value(forKey: "hasWarranty") as! Int64
         if hasWarranty == 0 {
-            fetchedRecord.hasWarranty = false
+            fetchedRecord!.hasWarranty = false
         } else {
-            fetchedRecord.hasWarranty = true
+            fetchedRecord!.hasWarranty = true
         }
-        fetchedRecord.lastUpdated = Date() as NSDate?
-        fetchedRecord.recordID = record.recordID.recordName
+        fetchedRecord!.lastUpdated = Date() as NSDate?
+        fetchedRecord!.recordID = record.recordID.recordName
         do {
             try context.save()
             DispatchQueue.main.async {
@@ -472,9 +526,9 @@ class CoreDataHelper {
             }
             return
         }
-        DispatchQueue.main.async {
-            reload.reloadData()
-        }
+//        DispatchQueue.main.async {
+//            reload.reloadData()
+//        }
     }
     
     static func cloudKitRecordCreated(record: CKRecord, in context: NSManagedObjectContext) {
@@ -536,7 +590,7 @@ class CoreDataHelper {
         // try to find the record in coredata
         let fetchedRecord = fetchRecord(with: record.recordID.recordName, in: context)
         
-        delete(record: fetchedRecord, in: context)
+        delete(record: fetchedRecord!, in: context)
     }
     
     static func cloudKitNoteChanged(record: CKRecord, in context: NSManagedObjectContext) {
