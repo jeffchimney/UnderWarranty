@@ -113,7 +113,7 @@ class DeletedAndExpiredController: UIViewController, UITableViewDelegate, UITabl
                     let recordImage = fetchedImages[0]
                     cell.warrantyImageView.image = UIImage(data: recordImage.image! as Data)
                 } else {
-                    cell.warrantyImageView.image = UIImage()
+                    cell.warrantyImageView.image = UIImage(named: "placeholder")
                 }
             }
         } else {
@@ -139,7 +139,7 @@ class DeletedAndExpiredController: UIViewController, UITableViewDelegate, UITabl
                     let recordImage = fetchedImages[0]
                     cell.warrantyImageView.image = UIImage(data: recordImage.image! as Data)
                 } else {
-                    cell.warrantyImageView.image = UIImage()
+                    cell.warrantyImageView.image = UIImage(named: "placeholder")
                 }
             }
         }

@@ -407,7 +407,7 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection footerTitle="UnderWarranty will not interrupt you for reviews." id="nnc-az-K89">
+                            <tableViewSection footerTitle="" id="nnc-az-K89">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="474-cL-Ylh" detailTextLabel="2tU-Cd-27l" rowHeight="50" style="IBUITableViewCellStyleSubtitle" id="5LA-tC-cCh" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="221" width="375" height="50"/>
@@ -433,6 +433,58 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="YxM-Yy-3lD" detailTextLabel="l2z-Sp-FMm" rowHeight="50" style="IBUITableViewCellStyleSubtitle" id="NXp-vo-v7Z" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="271" width="375" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="NXp-vo-v7Z" id="AW8-2s-Dnz">
+                                            <rect key="frame" x="0.0" y="0.0" width="342" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Contact Developer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="YxM-Yy-3lD">
+                                                    <rect key="frame" x="16" y="8" width="143.5" height="20.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Send feature requests, bugs, or encouragement." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="l2z-Sp-FMm">
+                                                    <rect key="frame" x="16" y="28.5" width="274.5" height="14.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                    <color key="textColor" red="0.29803922770000002" green="0.29803922770000002" blue="0.29803922770000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection footerTitle="" id="eWL-o9-a3S">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="50" id="7cz-zE-a8U" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="357" width="375" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="7cz-zE-a8U" id="tDU-Ac-oKJ">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6XQ-zZ-Ohj">
+                                                    <rect key="frame" x="8" y="10" width="359" height="30"/>
+                                                    <state key="normal" title="Delete local storage.">
+                                                        <color key="titleColor" red="1" green="0.049691020330000002" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    </state>
+                                                    <connections>
+                                                        <action selector="deleteLocalStorageButtonPressed:" destination="s0B-oZ-MX5" eventType="touchUpInside" id="9BX-tX-Q6x"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="6XQ-zZ-Ohj" firstAttribute="leading" secondItem="tDU-Ac-oKJ" secondAttribute="leadingMargin" id="BIT-pu-l49"/>
+                                                <constraint firstItem="6XQ-zZ-Ohj" firstAttribute="centerY" secondItem="tDU-Ac-oKJ" secondAttribute="centerY" id="PXb-5Q-dHL"/>
+                                                <constraint firstItem="6XQ-zZ-Ohj" firstAttribute="trailing" secondItem="tDU-Ac-oKJ" secondAttribute="trailingMargin" id="g6D-mv-8sG"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                         </sections>
@@ -448,6 +500,7 @@
                         <outlet property="allowDataSyncLabel" destination="Z0e-mX-p37" id="xGE-ek-mOu"/>
                         <outlet property="calendarSwitch" destination="Qml-C3-Kco" id="wiy-5O-WmX"/>
                         <outlet property="cameraSwitch" destination="VeP-bD-Gqc" id="8dC-Eo-aWk"/>
+                        <outlet property="deleteLocalStorageButton" destination="6XQ-zZ-Ohj" id="6Ry-C9-RTD"/>
                         <outlet property="navBar" destination="tTB-2A-IVi" id="qwp-zc-RRl"/>
                         <outlet property="rateUnderWarantyLabel" destination="474-cL-Ylh" id="scB-jm-3Vb"/>
                         <outlet property="rateUnderWarrantySubTitle" destination="2tU-Cd-27l" id="WUO-4m-ihd"/>
@@ -812,7 +865,7 @@
                                                         <constraint firstAttribute="width" constant="66" id="w22-Uf-IIK"/>
                                                     </constraints>
                                                 </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GTy-iS-eAP">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="15" translatesAutoresizingMaskIntoConstraints="NO" id="GTy-iS-eAP">
                                                     <rect key="frame" x="88" y="8" width="254" height="35"/>
                                                     <fontDescription key="fontDescription" name="KohinoorTelugu-Regular" family="Kohinoor Telugu" pointSize="25"/>
                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>

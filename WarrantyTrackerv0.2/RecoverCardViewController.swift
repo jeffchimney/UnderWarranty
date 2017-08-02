@@ -24,8 +24,13 @@ class RecoverCardViewController: UIViewController {
         managedContext = appDelegate.persistentContainer.viewContext
         
         let fetchedImages = CoreDataHelper.fetchImages(for: record, in: managedContext!)
-        let recordImage = fetchedImages[0]
-        imageView.image = UIImage(data: recordImage.image! as Data)
+        
+        if fetchedImages.count > 0 {
+            let recordImage = fetchedImages[0]
+            imageView.image = UIImage(data: recordImage.image! as Data)
+        } else {
+            imageView.image = UIImage(named: "placeholder")
+        }
     }
     
     override var previewActionItems: [UIPreviewActionItem] {

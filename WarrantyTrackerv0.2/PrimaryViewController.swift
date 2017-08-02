@@ -60,6 +60,15 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let defaults = UserDefaults.standard
+        if defaults.value(forKey: "FirstLaunch") == nil || defaults.bool(forKey: "FirstLaunch") == true {
+            defaults.set(false, forKey: "FirstLaunch")
+            defaults.set(false, forKey: "SyncUsingData")
+            //UserDefaultsHelper.setCameraPermissions(to: false)
+            //UserDefaultsHelper.setCalendarPermissions(to: false)
+        }
+        
         // set up zone.
         if defaults.object(forKey: "zoneCreated") == nil || defaults.bool(forKey: "zoneCreated") == false {
             createCustomZoneAndSetupSubscriptions()
@@ -119,6 +128,7 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
          let textFieldInsideSearchBar = searchController.searchBar.value(forKey: "searchField") as! UITextField
         textFieldInsideSearchBar.defaultTextAttributes = attributes
         
+        self.navigationController?.isToolbarHidden = false
         self.navigationController?.navigationBar.titleTextAttributes = [NSFontAttributeName: UIFont(name: "Kohinoor Telugu", size: 18)!]
         
         updateUserInterface()
@@ -315,16 +325,17 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         let queryNotification = notification as! CKQueryNotification
         print(queryNotification.queryNotificationReason == .recordCreated)
         print(queryNotification.queryNotificationReason.rawValue)
+        
         operation.recordChangedBlock = { record in
             let queryNotification = notification as! CKQueryNotification
             DispatchQueue.main.async {
-                print(queryNotification.queryNotificationReason)
+                print(record)
             }
-            if queryNotification.queryNotificationReason == .recordUpdated {
-                CoreDataHelper.cloudKitNoteChanged(record: record, in: managedContext)
-            } else if queryNotification.queryNotificationReason == .recordCreated {
-                CoreDataHelper.cloudKitNoteCreated(record: record, in: managedContext)
-            }
+            //if queryNotification.queryNotificationReason == .recordUpdated {
+            CoreDataHelper.cloudKitNoteChanged(record: record, in: managedContext)
+            //} else if queryNotification.queryNotificationReason == .recordCreated {
+            //CoreDataHelper.cloudKitNoteCreated(record: record, in: managedContext)
+            //}
         }
         
         operation.recordWithIDWasDeletedBlock = { deletedRecordID, recordType in
@@ -396,15 +407,11 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                 print("I MADE IT INTO THE RECORD PLACE!!!")
             }
             
-            let queryNotification = notification as! CKQueryNotification
-            if queryNotification.queryNotificationReason == .recordCreated {
-                CoreDataHelper.cloudKitImageCreated(record: record, in: managedContext)
-            } else if queryNotification.queryNotificationReason == .recordDeleted {
-                CoreDataHelper.cloudKitImageDeleted(record: record, in: managedContext)
-            }
+            CoreDataHelper.cloudKitImageCreated(record: record, in: managedContext)
         }
         
         operation.recordWithIDWasDeletedBlock = { deletedRecordID, recordType in
+            print("I MADE IT INTO THE Delete block!!!")
             if recordType == "Images" {
                 let queryNotification = notification as! CKQueryNotification
                 if queryNotification.queryNotificationReason == .recordDeleted {
@@ -813,6 +820,7 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.warrantyEnds.text = "∞"
                 }
                 let fetchedImages = CoreDataHelper.fetchImages(for: record, in: managedContext!)
+                print(record.recordID!)
                 if fetchedImages.count > 0 {
                     let recordImage = fetchedImages[0]
                     print(recordImage)

@@ -13,11 +13,10 @@ import CoreData
 import EventKit
 import AVFoundation
 import StoreKit
+import MessageUI
 
-class SettingsTableViewController: UITableViewController {
+class SettingsTableViewController: UITableViewController, MFMailComposeViewControllerDelegate {
     
-    @IBOutlet weak var logOutButton: UIButton!
-    @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var allowDataSyncLabel: UILabel!
     @IBOutlet weak var allowCameraAccessLabel: UILabel!
     @IBOutlet weak var allowCalendarAccessLabel: UILabel!
@@ -26,14 +25,16 @@ class SettingsTableViewController: UITableViewController {
     @IBOutlet weak var navBar: UINavigationItem!
     @IBOutlet weak var cameraSwitch: UISwitch!
     @IBOutlet weak var calendarSwitch: UISwitch!
+    @IBOutlet weak var deleteLocalStorageButton: UIButton!
+    let eventStore = EKEventStore()
     
     override func viewDidLoad() {
         
-        usernameLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
         allowDataSyncLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
         allowCameraAccessLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
         allowCalendarAccessLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
         rateUnderWarantyLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
+        deleteLocalStorageButton.titleLabel?.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
         
         if EKEventStore.authorizationStatus(for: EKEntityType.event) == .authorized {
             calendarSwitch.isOn = true
@@ -48,15 +49,51 @@ class SettingsTableViewController: UITableViewController {
     }
     
     override func viewDidLayoutSubviews() {
-        let defaults = UserDefaults.standard
-        let username = defaults.string(forKey: "username")
-        
-        if username != nil { // user is logged in
-            
-        }
-        
         let toggleRow = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! TitleAndSwitchTableViewCell
         toggleRow.toggle.isOn = UserDefaultsHelper.canSyncUsingData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        // ask for camera permissions if not already set
+        if(UserDefaults.standard.value(forKey: "CameraPermissions") == nil) {
+            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { (granted :Bool) -> Void in
+                if granted == true
+                {
+                    // User granted
+                    DispatchQueue.main.async {
+                        UserDefaultsHelper.setCameraPermissions(to: true)
+                        self.cameraSwitch.isOn = true
+                    }
+                }
+                else
+                {
+                    // User Rejected
+                    DispatchQueue.main.async {
+                        UserDefaultsHelper.setCameraPermissions(to: false)
+                        self.cameraSwitch.isOn = true
+                    }
+                }
+            });
+        }
+        
+        // ask for calendar permissions if not already set
+        if(UserDefaults.standard.value(forKey: "CalendarPermissions") == nil) {
+            eventStore.requestAccess(to: EKEntityType.event, completion: {
+                (accessGranted: Bool, error: Error?) in
+                
+                if accessGranted == true {
+                    UserDefaultsHelper.setCalendarPermissions(to: true)
+                    DispatchQueue.main.async(execute: {
+                        self.calendarSwitch.isOn = true
+                    })
+                } else {
+                    UserDefaultsHelper.setCalendarPermissions(to: false)
+                    DispatchQueue.main.async(execute: {
+                        self.calendarSwitch.isOn = false
+                    })
+                }
+            })
+        }
     }
     
     @IBAction func cameraAccessSwitch(_ sender: Any) {
@@ -89,18 +126,69 @@ class SettingsTableViewController: UITableViewController {
             return "Permissions"
         case 1:
             return "Feedback"
+        case 2:
+            return "Purge"
         default:
             return ""
         }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 1 {
-            if #available(iOS 10.3, *) {
-                SKStoreReviewController.requestReview()
-            } else {
-                // Fallback on earlier versions
+        if indexPath.section == 1 && indexPath.row == 0 {
+            rateApp(appId: "id1091944550", completion: { linked in
+                print(linked)
+            })
+        } else if indexPath.section == 1 && indexPath.row == 1 {
+            if !MFMailComposeViewController.canSendMail() {
+                print("Mail services are not available")
+                return
             }
+            sendEmail()
         }
+    }
+    
+    func rateApp(appId: String, completion: @escaping ((_ success: Bool)->())) {
+        guard let url = URL(string : "itms-apps://itunes.apple.com/app/" + appId) else {
+            completion(false)
+            return
+        }
+        guard #available(iOS 10, *) else {
+            completion(UIApplication.shared.openURL(url))
+            return
+        }
+        UIApplication.shared.open(url, options: [:], completionHandler: completion)
+    }
+    
+    @IBAction func deleteLocalStorageButtonPressed(_ sender: Any) {
+        let alertController = UIAlertController(title: "You Sure?", message: "UnderWarranty uses iCloud to back up and sync your Warranties.  Do you want to delete your local storage and pull everything from the cloud?", preferredStyle: UIAlertControllerStyle.alert)
+        
+        // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel) {
+            (result : UIAlertAction) -> Void in
+            print("Cancel")
+        }
+        
+        let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.destructive) {
+            (result : UIAlertAction) -> Void in
+            print("Delete")
+        }
+        
+        alertController.addAction(cancelAction)
+        alertController.addAction(deleteAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func sendEmail() {
+        let composeVC = MFMailComposeViewController()
+        composeVC.mailComposeDelegate = self
+        // Configure the fields of the interface.
+        composeVC.setToRecipients(["jeffchimney@icloud.com"])
+        composeVC.setSubject("Feedback")
+        // Present the view controller modally.
+        self.present(composeVC, animated: true, completion: nil)
+    }
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true, completion: nil)
     }
 }
