@@ -340,10 +340,11 @@
                                                     <rect key="frame" x="318" y="10" width="51" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <connections>
+                                                        <action selector="allowSyncSwitch:" destination="s0B-oZ-MX5" eventType="valueChanged" id="Jna-NC-RAA"/>
                                                         <action selector="toggleSwitch" destination="kEM-fS-z7d" eventType="valueChanged" id="GgB-l0-pq6"/>
                                                     </connections>
                                                 </switch>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Allow Sync to use Data" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z0e-mX-p37">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Allow Cloud Sync" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z0e-mX-p37">
                                                     <rect key="frame" x="16" y="14" width="294" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -356,8 +357,36 @@
                                             <outlet property="toggle" destination="x3L-ZA-6eC" id="Rdl-Em-i67"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="50" id="MXM-1v-fgT" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="50" id="N2U-SH-17r" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="85" width="375" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="N2U-SH-17r" id="oH3-AU-BbM">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uon-6c-rGy">
+                                                    <rect key="frame" x="318" y="10" width="51" height="31"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <connections>
+                                                        <action selector="allowDataSyncSwitch:" destination="s0B-oZ-MX5" eventType="valueChanged" id="sbA-x9-DHH"/>
+                                                        <action selector="toggleSwitch" destination="N2U-SH-17r" eventType="valueChanged" id="OAC-3W-efG"/>
+                                                    </connections>
+                                                </switch>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Allow Sync to use Data" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="czu-jX-diO">
+                                                    <rect key="frame" x="16" y="14" width="294" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="toggle" destination="uon-6c-rGy" id="eU0-zy-bbo"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="50" id="MXM-1v-fgT" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="135" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="MXM-1v-fgT" id="XTO-qw-5MM">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
@@ -381,7 +410,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="50" id="Hnb-FT-wI2" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="135" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="185" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Hnb-FT-wI2" id="Da9-v0-qe7">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
@@ -409,7 +438,7 @@
                             <tableViewSection footerTitle="" id="nnc-az-K89">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="474-cL-Ylh" detailTextLabel="2tU-Cd-27l" rowHeight="50" style="IBUITableViewCellStyleSubtitle" id="5LA-tC-cCh" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="221" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="271" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5LA-tC-cCh" id="drG-XZ-VfD">
                                             <rect key="frame" x="0.0" y="0.0" width="342" height="49.5"/>
@@ -433,7 +462,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="YxM-Yy-3lD" detailTextLabel="l2z-Sp-FMm" rowHeight="50" style="IBUITableViewCellStyleSubtitle" id="NXp-vo-v7Z" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="271" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="321" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="NXp-vo-v7Z" id="AW8-2s-Dnz">
                                             <rect key="frame" x="0.0" y="0.0" width="342" height="49.5"/>
@@ -461,7 +490,7 @@
                             <tableViewSection footerTitle="" id="eWL-o9-a3S">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="50" id="7cz-zE-a8U" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="357" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="407" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="7cz-zE-a8U" id="tDU-Ac-oKJ">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
@@ -497,6 +526,8 @@
                         <outlet property="allowCalendarAccessLabel" destination="Xc5-yR-uMF" id="gEt-Bd-ZZ6"/>
                         <outlet property="allowCameraAccessLabel" destination="Ru6-Ue-T4T" id="Sc9-L9-ZDa"/>
                         <outlet property="allowDataSyncLabel" destination="Z0e-mX-p37" id="xGE-ek-mOu"/>
+                        <outlet property="allowDataSyncSwitch" destination="uon-6c-rGy" id="HxA-mf-H1T"/>
+                        <outlet property="allowSync" destination="x3L-ZA-6eC" id="rI9-CC-4L2"/>
                         <outlet property="calendarSwitch" destination="Qml-C3-Kco" id="wiy-5O-WmX"/>
                         <outlet property="cameraSwitch" destination="VeP-bD-Gqc" id="8dC-Eo-aWk"/>
                         <outlet property="deleteLocalStorageButton" destination="6XQ-zZ-Ohj" id="6Ry-C9-RTD"/>

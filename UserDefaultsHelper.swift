@@ -56,36 +56,52 @@ class UserDefaultsHelper {
         return  defaults.object(forKey: "toDeleteQueue") as? [String]
     }
     
+    static func syncEnabled() -> Bool {
+        return  defaults.object(forKey: "CanSync") as! Bool
+    }
+    
     static func addRecordToQueue(recordID: String) {
-        var queuedRecords = defaults.object(forKey: "recordQueue") as! [String]?
-        
-        if queuedRecords != nil {
-            if !(queuedRecords?.contains(recordID))! {
+        if UserDefaultsHelper.syncEnabled() {
+            var queuedRecords = defaults.object(forKey: "recordQueue") as! [String]?
+            
+            if queuedRecords != nil {
+                if !(queuedRecords?.contains(recordID))! {
+                    queuedRecords!.append(recordID)
+                }
+            } else {
+                queuedRecords = []
                 queuedRecords!.append(recordID)
             }
-        } else {
-            queuedRecords = []
-            queuedRecords!.append(recordID)
+            defaults.set(queuedRecords, forKey: "recordQueue")
         }
-        defaults.set(queuedRecords, forKey: "recordQueue")
     }
     
     static func addRecordToDeleteQueue(recordID: String) {
-        var queuedRecords = defaults.object(forKey: "recordQueue") as! [String]?
-        
-        if queuedRecords != nil {
-            if !(queuedRecords?.contains(recordID))! {
+        if UserDefaultsHelper.syncEnabled() {
+            var queuedRecords = defaults.object(forKey: "recordQueue") as! [String]?
+            
+            if queuedRecords != nil {
+                if !(queuedRecords?.contains(recordID))! {
+                    queuedRecords!.append(recordID)
+                }
+            } else {
+                queuedRecords = []
                 queuedRecords!.append(recordID)
             }
-        } else {
-            queuedRecords = []
-            queuedRecords!.append(recordID)
+            defaults.set(queuedRecords, forKey: "toDeleteQueue")
         }
-        defaults.set(queuedRecords, forKey: "toDeleteQueue")
     }
     
     static func setQueueToEmpty() {
         defaults.set([], forKey: "recordQueue")
+    }
+    
+    static func setCanSyncUsingData(to: Bool) {
+        defaults.set(to, forKey: "SyncUsingData")
+    }
+    
+    static func setSyncEnabled(to: Bool) {
+        defaults.set(to, forKey: "CanSync")
     }
     
     static func setToDeleteQueueToEmpty() {

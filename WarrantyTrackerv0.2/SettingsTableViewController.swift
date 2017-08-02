@@ -23,6 +23,8 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
     @IBOutlet weak var rateUnderWarantyLabel: UILabel!
     @IBOutlet weak var rateUnderWarrantySubTitle: UILabel!
     @IBOutlet weak var navBar: UINavigationItem!
+    @IBOutlet weak var allowSync: UISwitch!
+    @IBOutlet weak var allowDataSyncSwitch: UISwitch!
     @IBOutlet weak var cameraSwitch: UISwitch!
     @IBOutlet weak var calendarSwitch: UISwitch!
     @IBOutlet weak var deleteLocalStorageButton: UIButton!
@@ -36,6 +38,9 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
         rateUnderWarantyLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
         deleteLocalStorageButton.titleLabel?.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
         
+    }
+    
+    override func viewDidLayoutSubviews() {
         if EKEventStore.authorizationStatus(for: EKEntityType.event) == .authorized {
             calendarSwitch.isOn = true
         } else {
@@ -46,11 +51,16 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
         } else {
             cameraSwitch.isOn = false
         }
-    }
-    
-    override func viewDidLayoutSubviews() {
-        let toggleRow = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! TitleAndSwitchTableViewCell
-        toggleRow.toggle.isOn = UserDefaultsHelper.canSyncUsingData()
+        if UserDefaultsHelper.canSyncUsingData() {
+            allowDataSyncSwitch.isOn = true
+        } else {
+            allowDataSyncSwitch.isOn = false
+        }
+        if UserDefaultsHelper.syncEnabled() {
+            allowSync.isOn = true
+        } else {
+            allowSync.isOn = false
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -93,6 +103,22 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
                     })
                 }
             })
+        }
+    }
+    
+    @IBAction func allowSyncSwitch(_ sender: Any) {
+        if allowSync.isOn {
+            UserDefaultsHelper.setSyncEnabled(to: true)
+        } else {
+            UserDefaultsHelper.setSyncEnabled(to: false)
+        }
+    }
+    
+    @IBAction func allowDataSyncSwitch(_ sender: Any) {
+        if allowDataSyncSwitch.isOn {
+            UserDefaultsHelper.setCanSyncUsingData(to: true)
+        } else {
+            UserDefaultsHelper.setCanSyncUsingData(to: false)
         }
     }
     

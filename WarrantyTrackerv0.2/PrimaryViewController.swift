@@ -65,6 +65,7 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         if defaults.value(forKey: "FirstLaunch") == nil || defaults.bool(forKey: "FirstLaunch") == true {
             defaults.set(false, forKey: "FirstLaunch")
             defaults.set(false, forKey: "SyncUsingData")
+            defaults.set(true, forKey: "CanSync")
         }
         
         // set up zone.
@@ -461,7 +462,9 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         let recordCount = CoreDataHelper.recordCount(in: managedContext!)
         if recordCount == 0 {
-            getRecordsOnFirstLaunch()
+            if UserDefaultsHelper.syncEnabled() {
+                getRecordsOnFirstLaunch()
+            }
         }
         
         let fetchedRecords = CoreDataHelper.fetchAllRecords(in: managedContext!)
@@ -860,11 +863,13 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
             defaults.set("unreachable", forKey: "connection")
         case .wifi:
             defaults.set("wifi", forKey: "connection")
-            syncEverything()
+            if UserDefaultsHelper.syncEnabled() {
+                syncEverything()
+            }
             
         case .wwan:
             defaults.set("data", forKey: "connection")
-            if UserDefaultsHelper.canSyncUsingData() {
+            if UserDefaultsHelper.canSyncUsingData() && UserDefaultsHelper.syncEnabled() {
                 syncEverything() // there should only be anything in the queued array if the user is just coming out of an area of no service.
             }
         }
