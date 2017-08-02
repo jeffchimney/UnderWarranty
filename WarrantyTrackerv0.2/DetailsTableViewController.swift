@@ -1,6 +1,6 @@
 //
 //  DetailsTableViewController.swift
-//  WarrantyTrackerv0.2
+//  UnderWarrantyv0.2
 //
 //  Created by Jeff Chimney on 2017-01-10.
 //  Copyright © 2017 Jeff Chimney. All rights reserved.
@@ -240,7 +240,7 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
                     if !record.hasWarranty {
                         if EKEventStore.authorizationStatus(for: EKEntityType.event) == .authorized {
                             for calendar in calendars {
-                                if calendar.title == "WarrantyTracker" {
+                                if calendar.title == "UnderWarranty" {
                                     let event = eventStore.event(withIdentifier: record.eventIdentifier!)
                                     
                                     event?.startDate = dateFormatter.date(from: endDateCell.detail.text!)!

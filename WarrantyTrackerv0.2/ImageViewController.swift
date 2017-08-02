@@ -1,6 +1,6 @@
 //
 //  ImageViewController.swift
-//  WarrantyTrackerv0.2
+//  UnderWarrantyv0.2
 //
 //  Created by Jeff Chimney on 2016-11-25.
 //  Copyright © 2016 Jeff Chimney. All rights reserved.

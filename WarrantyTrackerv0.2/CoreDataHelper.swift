@@ -1,6 +1,6 @@
 //
 //  CoreDataHelper.swift
-//  WarrantyTrackerv0.2
+//  UnderWarrantyv0.2
 //
 //  Created by Jeff Chimney on 2017-03-06.
 //  Copyright © 2017 Jeff Chimney. All rights reserved.
@@ -9,8 +9,24 @@
 import Foundation
 import CoreData
 import CloudKit
+import EventKit
 
 class CoreDataHelper {
+    
+    static func recordCount(in context: NSManagedObjectContext) -> Int {
+        // Get associated images
+        let recordFetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Record")
+        
+        var count = 0
+        do {
+            count = try context.count(for: recordFetchRequest)
+        } catch let error as NSError {
+            count = 0
+            print("Could not count records. \(error), \(error.userInfo)")
+        }
+        
+        return count
+    }
     
     static func fetchAllRecords(in context: NSManagedObjectContext) -> [Record] {
         // Get associated images
@@ -513,6 +529,7 @@ class CoreDataHelper {
         } else {
             fetchedRecord!.hasWarranty = true
         }
+        fetchedRecord!.dateCreated = record.creationDate! as NSDate
         fetchedRecord!.lastUpdated = Date() as NSDate?
         fetchedRecord!.recordID = record.recordID.recordName
         do {
@@ -526,9 +543,52 @@ class CoreDataHelper {
             }
             return
         }
-//        DispatchQueue.main.async {
-//            reload.reloadData()
-//        }
+        
+        let eventStore = EKEventStore()
+        let calendars = eventStore.calendars(for: .event)
+        
+        if !fetchedRecord!.hasWarranty {
+            if EKEventStore.authorizationStatus(for: EKEntityType.event) == .authorized {
+                for calendar in calendars {
+                    if calendar.title == "UnderWarranty" {
+                        var event = eventStore.event(withIdentifier: fetchedRecord!.eventIdentifier!)
+                        if event == nil {
+                            event = EKEvent(eventStore: eventStore)
+                            event?.calendar = calendar
+                            event?.title = fetchedRecord!.title! + " Warranty Expires"
+                            event?.notes = "Is your item still working properly?  Its warranty expires today."
+                        }
+                        event?.startDate = fetchedRecord!.warrantyEnds! as Date
+                        let endDate = fetchedRecord!.warrantyEnds! as Date
+                        event?.endDate = endDate
+                        event?.isAllDay = true
+                        
+                        // remove old alarm and configure new alarm for event
+                        if (event?.hasAlarms)! {
+                            event?.alarms?.removeAll()
+                        }
+                        
+                        let daysToSubtract = Int(-fetchedRecord!.daysBeforeReminder)
+                        
+                        var addingPeriod = DateComponents()
+                        addingPeriod.day = daysToSubtract
+                        addingPeriod.hour = 12
+                        
+                        let userCalendar = NSCalendar.current
+                        let alarmDate = userCalendar.date(byAdding: addingPeriod, to: endDate) // this is really subtracting...
+                        
+                        let alarm = EKAlarm(absoluteDate: alarmDate!)
+                        event?.addAlarm(alarm)
+                        
+                        do {
+                            try eventStore.save(event!, span: .thisEvent, commit: true)
+                        } catch {
+                            print("The event couldnt be updated")
+                        }
+                    }
+                }
+            }
+        }
     }
     
     static func cloudKitRecordCreated(record: CKRecord, in context: NSManagedObjectContext) {
@@ -567,6 +627,7 @@ class CoreDataHelper {
         } else {
             cdRecord.hasWarranty = true
         }
+        cdRecord.dateCreated = record.creationDate! as NSDate
         cdRecord.lastUpdated = Date() as NSDate?
         cdRecord.recordID = record.recordID.recordName
         
@@ -580,6 +641,50 @@ class CoreDataHelper {
                 print("Error Syncing Changes to Note to Core Data")
             }
             return
+        }
+        
+        let eventStore = EKEventStore()
+        let calendars = eventStore.calendars(for: .event)
+        
+        if !cdRecord.hasWarranty {
+            if EKEventStore.authorizationStatus(for: EKEntityType.event) == .authorized {
+                for calendar in calendars {
+                    if calendar.title == "UnderWarranty" {
+                        let event = EKEvent(eventStore: eventStore)
+                        event.calendar = calendar
+                        event.title = cdRecord.title! + " Warranty Expires"
+                        event.notes = "Is your item still working properly?  Its warranty expires today."
+                        
+                        event.startDate = cdRecord.warrantyEnds! as Date
+                        let endDate = cdRecord.warrantyEnds! as Date
+                        event.endDate = endDate
+                        event.isAllDay = true
+                        
+                        // remove old alarm and configure new alarm for event
+                        if (event.hasAlarms) {
+                            event.alarms?.removeAll()
+                        }
+                        
+                        let daysToSubtract = Int(-cdRecord.daysBeforeReminder)
+                        
+                        var addingPeriod = DateComponents()
+                        addingPeriod.day = daysToSubtract
+                        addingPeriod.hour = 12
+                        
+                        let userCalendar = NSCalendar.current
+                        let alarmDate = userCalendar.date(byAdding: addingPeriod, to: endDate) // this is really subtracting...
+                        
+                        let alarm = EKAlarm(absoluteDate: alarmDate!)
+                        event.addAlarm(alarm)
+                        
+                        do {
+                            try eventStore.save(event, span: .thisEvent, commit: true)
+                        } catch {
+                            print("The event couldnt be updated")
+                        }
+                    }
+                }
+            }
         }
     }
     

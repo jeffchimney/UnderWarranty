@@ -1,6 +1,6 @@
 //
 //  WarrantyBeginsEndsViewController.swift
-//  WarrantyTrackerv0.2
+//  UnderWarrantyv0.2
 //
 //  Created by Jeff Chimney on 2016-11-01.
 //  Copyright © 2016 Jeff Chimney. All rights reserved.
@@ -343,7 +343,7 @@ class WarrantyBeginsEndsViewController: UIViewController, UIPickerViewDelegate, 
         let calendars = eventStore.calendars(for: EKEntityType.event) // Grab every calendar the user has
         var exists: Bool = false
         for calendar in calendars { // Search all these calendars
-            if calendar.title == "WarrantyTracker" {
+            if calendar.title == "UnderWarranty" {
                 exists = true
                 retCal = calendar
             }
@@ -351,7 +351,7 @@ class WarrantyBeginsEndsViewController: UIViewController, UIPickerViewDelegate, 
         
         if !exists {
             let newCalendar = EKCalendar(for:EKEntityType.event, eventStore:eventStore)
-            newCalendar.title="WarrantyTracker"
+            newCalendar.title="UnderWarranty"
             newCalendar.source = eventStore.defaultCalendarForNewEvents.source
             do {
                 try eventStore.saveCalendar(newCalendar, commit:true)

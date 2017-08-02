@@ -1,6 +1,6 @@
 //
 //  SettingsTableViewController.swift
-//  WarrantyTrackerv0.2
+//  UnderWarrantyv0.2
 //
 //  Created by Jeff Chimney on 2017-02-19.
 //  Copyright © 2017 Jeff Chimney. All rights reserved.
@@ -160,7 +160,7 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
     }
     
     @IBAction func deleteLocalStorageButtonPressed(_ sender: Any) {
-        let alertController = UIAlertController(title: "You Sure?", message: "UnderWarranty uses iCloud to back up and sync your Warranties.  Do you want to delete your local storage and pull everything from the cloud?", preferredStyle: UIAlertControllerStyle.alert)
+        let alertController = UIAlertController(title: "You Sure?", message: "UnderWarranty uses iCloud to back up and sync your Warranties.  Do you want to delete your local storage? (Any records in the cloud will be retrieved when you pull to refresh table view on the main page if there are no records in your local storage)", preferredStyle: UIAlertControllerStyle.alert)
         
         // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
         let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel) {
@@ -171,6 +171,28 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
         let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.destructive) {
             (result : UIAlertAction) -> Void in
             print("Delete")
+            
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+                return
+            }
+            
+            do {
+                let managedContext = appDelegate.persistentContainer.viewContext
+                
+                let fetchNote = NSFetchRequest<NSFetchRequestResult>(entityName: "Note")
+                let requestNote = NSBatchDeleteRequest(fetchRequest: fetchNote)
+                _ = try managedContext.execute(requestNote)
+                
+                let fetchImage = NSFetchRequest<NSFetchRequestResult>(entityName: "Image")
+                let requestImage = NSBatchDeleteRequest(fetchRequest: fetchImage)
+                _ = try managedContext.execute(requestImage)
+                
+                let fetchRecord = NSFetchRequest<NSFetchRequestResult>(entityName: "Record")
+                let requestRecord = NSBatchDeleteRequest(fetchRequest: fetchRecord)
+                _ = try managedContext.execute(requestRecord)
+            } catch {
+                print("Failed to delete everything in core data")
+            }
         }
         
         alertController.addAction(cancelAction)
