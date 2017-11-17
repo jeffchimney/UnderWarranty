@@ -11,7 +11,7 @@ import CoreData
 import CloudKit
 import EventKit
 
-class WarrantyBeginsEndsViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
+class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
     // variables that have been passed forward
     var titleString: String! = nil
@@ -21,20 +21,15 @@ class WarrantyBeginsEndsViewController: UIViewController, UIPickerViewDelegate, 
     //
     
     @IBOutlet weak var beginsPicker: UIDatePicker!
+    @IBOutlet weak var endsPicker: UIDatePicker!
+    @IBOutlet weak var saveButton: UIBarButtonItem!
     @IBOutlet weak var selectedStartDate: UILabel!
     @IBOutlet weak var selectedEndDate: UILabel!
-    @IBOutlet weak var saveButton: UIBarButtonItem!
-    @IBOutlet weak var saveDateButton: UIButton!
-    @IBOutlet weak var warrantyBeginsLabel: UILabel!
-    @IBOutlet weak var warrantyEndsLabel: UILabel!
     @IBOutlet weak var navBar: UINavigationItem!
     //@IBOutlet weak var numberOfWeeksSegment: UISegmentedControl!
     @IBOutlet weak var daysBeforePicker: UIPickerView!
-    @IBOutlet weak var remindMeLabel1: UILabel!
-    @IBOutlet weak var remindMeLabel2: UILabel!
-    @IBOutlet weak var datesSlidingView: UIView!
-    @IBOutlet weak var daysBeforeSlidingView: UIView!
     @IBOutlet weak var lifetimeWarrantySwitch: UISwitch!
+    @IBOutlet var cellsReliantOnEndDate: [UITableViewCell]!
     
     var startDatePicked = false
     var endDatePicked = false
@@ -50,22 +45,15 @@ class WarrantyBeginsEndsViewController: UIViewController, UIPickerViewDelegate, 
         super.viewDidLoad()
         
         beginsPicker.datePickerMode = UIDatePickerMode.date
-        selectedStartDate.text = ""
-        selectedEndDate.text = ""
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM d, yyyy"
         
-        selectedStartDate.textColor = UIColor.red
-        selectedEndDate.textColor = UIColor.red
-        saveDateButton.setTitle("Set Start Date", for: .normal)
-        saveDateButton.layer.cornerRadius = 10
-        warrantyBeginsLabel.isHidden = true
-        warrantyEndsLabel.isHidden = true
-        selectedEndDate.isHidden = true
+        selectedStartDate.text = dateFormatter.string(from: beginsPicker.date)
+        selectedEndDate.text = dateFormatter.string(from: endsPicker.date)
+        
+        //selectedStartDate.textColor = UIColor.red
+        //selectedEndDate.textColor = UIColor.red
         navBar.title = "Warranty"
-        saveButton.isEnabled = false
-        
-        remindMeLabel1.isHidden = true
-        daysBeforePicker.isHidden = true
-        remindMeLabel2.isHidden = true
         
         for index in 1...31 {
             pickerData.append(String(index))
@@ -73,20 +61,7 @@ class WarrantyBeginsEndsViewController: UIViewController, UIPickerViewDelegate, 
         
         daysBeforePicker.delegate = self
         
-        datesSlidingView.layer.shadowColor = UIColor.black.cgColor
-        datesSlidingView.layer.shadowOpacity = 0.7
-        datesSlidingView.layer.shadowOffset = CGSize.zero
-        datesSlidingView.layer.shadowRadius = 5
-        datesSlidingView.translatesAutoresizingMaskIntoConstraints = true
-        datesSlidingView.layer.cornerRadius = 15
-        
-        daysBeforeSlidingView.layer.shadowColor = UIColor.black.cgColor
-        daysBeforeSlidingView.layer.shadowOpacity = 0.7
-        daysBeforeSlidingView.layer.shadowOffset = CGSize.zero
-        daysBeforeSlidingView.layer.shadowRadius = 5
-        daysBeforeSlidingView.translatesAutoresizingMaskIntoConstraints = true
-        daysBeforeSlidingView.layer.cornerRadius = 15
-        lifetimeWarrantySwitch.isHidden = true
+        lifetimeWarrantySwitch.isOn = false
         
         navBarHeight = navigationController!.navigationBar.frame.height
         navigationController?.isToolbarHidden = true
@@ -94,15 +69,13 @@ class WarrantyBeginsEndsViewController: UIViewController, UIPickerViewDelegate, 
         if !UserDefaultsHelper.hasCalendarPermissions() {
             requestAccessToCalendar()
         }
+        
+        tableView.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         daysBeforePicker.selectRow(6, inComponent: 0, animated: false)
-        datesSlidingView.center.y = -datesSlidingView.frame.height
-        print(daysBeforeSlidingView.center.y)
-        daysBeforeSlidingView.center.y = view.frame.height + daysBeforeSlidingView.frame.height
-        print(daysBeforeSlidingView.center.y)
     }
     
     override func didReceiveMemoryWarning() {
@@ -112,103 +85,31 @@ class WarrantyBeginsEndsViewController: UIViewController, UIPickerViewDelegate, 
 
     @IBAction func lifetimeWarrantySwitched(_ sender: Any) {
         if lifetimeWarrantySwitch.isOn {
-            saveButton.isEnabled = true
+            for cell in cellsReliantOnEndDate {
+                cell.isHidden = true
+            }
         } else {
-            saveButton.isEnabled = false
-        }
-    }
-    
-    @IBAction func pickerChanged(_ sender: Any) {
-        if startDatePicked { // make sure end date is never earlier than start date
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "MMM d, yyyy"
-            print(beginsPicker.date.compare(dateFormatter.date(from: selectedStartDate.text!)!) == .orderedAscending)
-
-            if beginsPicker.date.compare(dateFormatter.date(from: selectedStartDate.text!)!) == .orderedAscending {
-                beginsPicker.date = dateFormatter.date(from: selectedStartDate.text!)!
+            for cell in cellsReliantOnEndDate {
+                cell.isHidden = false
             }
         }
     }
     
-    @IBAction func saveDateButtonPressed(_ sender: Any) {
-        if startDatePicked == false && endDatePicked == false { // set start date
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "MMM d, yyyy"
+    @IBAction func pickerChanged(_ sender: UIDatePicker) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM d, yyyy"
+        
+        if sender == beginsPicker { // update begins date
             let startDate = dateFormatter.string(from: beginsPicker.date)
             self.selectedStartDate.text = startDate
-            
-            selectedStartDate.isHidden = false
-            warrantyBeginsLabel.isHidden = false
-            saveDateButton.setTitle("Set End Date", for: .normal)
-            startDatePicked = true
-            saveButton.isEnabled = false
-            lifetimeWarrantySwitch.isHidden = false
-            lifetimeWarrantySwitch.isOn = false
-            warrantyEndsLabel.text = "Lifetime"
-            warrantyEndsLabel.isHidden = false
-            
-            
-            UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
-                //let statusHeight = UIApplication.shared.statusBarFrame.size.height
-                self.datesSlidingView.center.y = self.datesSlidingView.frame.height/2
-            }, completion: { (_) in
-            })
-            
-        } else if startDatePicked == true && endDatePicked == false { // set end date
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "MMM d, yyyy"
-            let endDate = dateFormatter.string(from: beginsPicker.date)
+        } else { // udate end date
+            let endDate = dateFormatter.string(from: endsPicker.date)
             self.selectedEndDate.text = endDate
-            warrantyEndsLabel.text = "Ends"
-            warrantyEndsLabel.alpha = 0
-            selectedEndDate.alpha = 0
-            lifetimeWarrantySwitch.isHidden = true
-            lifetimeWarrantySwitch.isOn = false
-            warrantyEndsLabel.isHidden = false
-            selectedEndDate.isHidden = false
-            saveDateButton.setTitle("Change Dates", for: .normal)
-            endDatePicked = true
-            saveButton.isEnabled = true
-            
-            remindMeLabel1.isHidden = false
-            daysBeforePicker.isHidden = false
-            remindMeLabel2.isHidden = false
-            
-            UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
-                self.warrantyEndsLabel.alpha = 1
-                self.selectedEndDate.alpha = 1
-                self.daysBeforeSlidingView.center.y = self.view.frame.height - self.daysBeforeSlidingView.frame.height/2
-//            }, completion: { (_) in
-//                print(self.daysBeforeSlidingView.center.y)
-//                
-//                UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
-//                    self.daysBeforeSlidingView.center.y = self.view.frame.height - self.daysBeforeSlidingView.frame.height/2
-//                }, completion: nil)
-//            })
-            })
-        } else if startDatePicked == true && endDatePicked == true { // clear both dates and start over
-            self.selectedStartDate.text = ""
-            self.selectedEndDate.text = ""
-            warrantyEndsLabel.isHidden = true
-            selectedStartDate.isHidden = true
-            lifetimeWarrantySwitch.isHidden = true
-            selectedEndDate.isHidden = true
-            startDatePicked = false
-            endDatePicked = false
-            saveButton.isEnabled = false
-            saveDateButton.setTitle("Set Start Date", for: .normal)
-            
-            UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
-                self.warrantyEndsLabel.alpha = 1
-                self.selectedEndDate.alpha = 1
-                
-                self.daysBeforeSlidingView.center.y = self.view.frame.height + self.daysBeforeSlidingView.frame.height/2
-                self.datesSlidingView.center.y = -self.datesSlidingView.frame.height/2
-            }, completion: { (_) in
-                print(self.daysBeforeSlidingView.center.y)
-            })
         }
-        
+
+        if endsPicker.date.compare(dateFormatter.date(from: selectedStartDate.text!)!) == .orderedAscending {
+            endsPicker.date = beginsPicker.date
+        }
     }
     
     //MARK: Picker View Data Sources and Delegates
