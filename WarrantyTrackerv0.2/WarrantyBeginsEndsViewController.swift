@@ -30,7 +30,8 @@ class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDeleg
     @IBOutlet weak var daysBeforePicker: UIPickerView!
     @IBOutlet weak var lifetimeWarrantySwitch: UISwitch!
     @IBOutlet var cellsReliantOnEndDate: [UITableViewCell]!
-    
+    @IBOutlet weak var beginsPickerCell: UITableViewCell!
+    @IBOutlet weak var endsPickerCell: UITableViewCell!
     var startDatePicked = false
     var endDatePicked = false
     var hasWarranty = true
@@ -40,6 +41,10 @@ class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDeleg
     let defaults = UserDefaults.standard
     let eventStore = EKEventStore()
     var calendars: [EKCalendar]?
+    
+    var selectedIndexPathRow = 0
+    var beginsCellIsShowing = false
+    var endsCellIsShowing = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -296,6 +301,56 @@ class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDeleg
     
     func loadCalendars() {
         calendars = eventStore.calendars(for: EKEntityType.event)
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == 0 || indexPath.row == 3 {
+            selectedIndexPathRow = indexPath.row
+            tableView.reloadData()
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.row == selectedIndexPathRow+1 {
+            if selectedIndexPathRow == 0 {
+                if beginsCellIsShowing {
+                    beginsCellIsShowing = !beginsCellIsShowing
+                    return 0
+                } else {
+                    beginsCellIsShowing = !beginsCellIsShowing
+                    return 150
+                }
+            } else if selectedIndexPathRow == 3 {
+                if endsCellIsShowing {
+                    endsCellIsShowing = !endsCellIsShowing
+                    return 0
+                } else {
+                    endsCellIsShowing = !endsCellIsShowing
+                    return 150
+                }
+            }
+            return 0
+        } else if indexPath.row == 0 || indexPath.row == 2 || indexPath.row == 3  || indexPath.row == 5 || indexPath.row == 7 {
+            return 44
+        } else if indexPath.row == 1 || indexPath.row == 4 {
+            if indexPath.row == 1 {
+                if beginsCellIsShowing {
+                    return 150
+                } else {
+                    return 0
+                }
+            }
+            if indexPath.row == 4 {
+                if endsCellIsShowing {
+                    return 150
+                } else {
+                    return 0
+                }
+            }
+            return 150
+        } else {
+            return 100
+        }
     }
 }
 
