@@ -28,11 +28,8 @@
 		BE56CE451E2D389D006870E7 /* NotesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE56CE441E2D389D006870E7 /* NotesTableViewCell.swift */; };
 		BE56CE481E2D50FE006870E7 /* InfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE56CE471E2D50FE006870E7 /* InfoTableViewCell.swift */; };
 		BE56CE4A1E2D5909006870E7 /* ImagesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE56CE491E2D5909006870E7 /* ImagesTableViewCell.swift */; };
-		BE6525551E1F46A200DF03BC /* WhySignUpController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6525541E1F46A200DF03BC /* WhySignUpController.swift */; };
 		BE69FF1D1DE4DD830052685E /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE69FF1C1DE4DD830052685E /* CoreData.framework */; };
 		BE6B7FEE1E0B82CD00B588C1 /* DeletedAndExpiredController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6B7FED1E0B82CD00B588C1 /* DeletedAndExpiredController.swift */; };
-		BE7EE2521E1EFBF2009ED090 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE7EE2511E1EFBF2009ED090 /* SignUpViewController.swift */; };
-		BE7EE2541E1F1D55009ED090 /* AccountQuestionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE7EE2531E1F1D55009ED090 /* AccountQuestionViewController.swift */; };
 		BE81B6061E246D1E00EF71CC /* RecoverCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE81B6051E246D1E00EF71CC /* RecoverCardViewController.swift */; };
 		BE882DF01ED69B7800CFD79D /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE882DEF1ED69B7800CFD79D /* Extensions.swift */; };
 		BEA0D6D71DE8E66800A2AFFE /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA0D6D61DE8E66800A2AFFE /* ImageViewController.swift */; };
@@ -94,12 +91,9 @@
 		BE56CE441E2D389D006870E7 /* NotesTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotesTableViewCell.swift; sourceTree = "<group>"; };
 		BE56CE471E2D50FE006870E7 /* InfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoTableViewCell.swift; sourceTree = "<group>"; };
 		BE56CE491E2D5909006870E7 /* ImagesTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagesTableViewCell.swift; sourceTree = "<group>"; };
-		BE6525541E1F46A200DF03BC /* WhySignUpController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WhySignUpController.swift; sourceTree = "<group>"; };
 		BE69FF1C1DE4DD830052685E /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		BE6B7FED1E0B82CD00B588C1 /* DeletedAndExpiredController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeletedAndExpiredController.swift; sourceTree = "<group>"; };
 		BE7EE24E1E1EF403009ED090 /* WarrantyTrackerv0.2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WarrantyTrackerv0.2.entitlements; sourceTree = "<group>"; };
-		BE7EE2511E1EFBF2009ED090 /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
-		BE7EE2531E1F1D55009ED090 /* AccountQuestionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountQuestionViewController.swift; sourceTree = "<group>"; };
 		BE81B6051E246D1E00EF71CC /* RecoverCardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecoverCardViewController.swift; sourceTree = "<group>"; };
 		BE882DEF1ED69B7800CFD79D /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		BEA0D6D61DE8E66800A2AFFE /* ImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
@@ -174,9 +168,6 @@
 				BE499A3C1E6DD16E00AA3A25 /* DataHandlingHelpers */,
 				BE7EE24E1E1EF403009ED090 /* WarrantyTrackerv0.2.entitlements */,
 				BE1C110F1DC921D200B0D493 /* AppDelegate.swift */,
-				BE7EE2531E1F1D55009ED090 /* AccountQuestionViewController.swift */,
-				BE6525541E1F46A200DF03BC /* WhySignUpController.swift */,
-				BE7EE2511E1EFBF2009ED090 /* SignUpViewController.swift */,
 				BE1C11131DC921D200B0D493 /* PrimaryViewController.swift */,
 				BE6B7FED1E0B82CD00B588C1 /* DeletedAndExpiredController.swift */,
 				BE81B6051E246D1E00EF71CC /* RecoverCardViewController.swift */,
@@ -431,15 +422,12 @@
 				BEE224CB1E9ED3EB004D92D7 /* UserDefaultsHelper.swift in Sources */,
 				BEE224CF1E9EEF46004D92D7 /* UsernamePasswordTableViewCell.swift in Sources */,
 				BE56CE4A1E2D5909006870E7 /* ImagesTableViewCell.swift in Sources */,
-				BE6525551E1F46A200DF03BC /* WhySignUpController.swift in Sources */,
 				BE882DF01ED69B7800CFD79D /* Extensions.swift in Sources */,
 				BEB975C91DE4D59C000DD5F4 /* WarrantyTracker.xcdatamodeld in Sources */,
 				BECB41471DFF297200689AA4 /* EditDateController.swift in Sources */,
-				BE7EE2521E1EFBF2009ED090 /* SignUpViewController.swift in Sources */,
 				BE2097DD1E38071B007B17D1 /* NoteViewController.swift in Sources */,
 				BE30DC2D1E020AE10022259E /* EditPhotoViewController.swift in Sources */,
 				BE1C11101DC921D200B0D493 /* AppDelegate.swift in Sources */,
-				BE7EE2541E1F1D55009ED090 /* AccountQuestionViewController.swift in Sources */,
 				BE1C11401DC9551600B0D493 /* NewReceiptViewController.swift in Sources */,
 				BE1C11121DC921D200B0D493 /* NewItemViewController.swift in Sources */,
 				BE5269AF1DCEAFCD00B46A4B /* WarrantyTableViewCellController.swift in Sources */,

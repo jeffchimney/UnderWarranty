@@ -884,12 +884,12 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func syncEverything() {
-        guard let appDelegate =
-            UIApplication.shared.delegate as? AppDelegate else {
-                return
-        }
-        
-        let managedContext = appDelegate.persistentContainer.viewContext
+//        guard let appDelegate =
+//            UIApplication.shared.delegate as? AppDelegate else {
+//                return
+//        }
+//
+//        let managedContext = appDelegate.persistentContainer.viewContext
         let queuedRecords = UserDefaultsHelper.getQueuedChanges()
         let queuedRecordsToDelete = UserDefaultsHelper.getQueuedToDelete()
         
@@ -899,16 +899,16 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                     
                     let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
                     privateDatabase.fetch(withRecordID: CKRecordID(recordName: recordID, zoneID: zoneID), completionHandler: ({record, error in
-                        let fetchedRecord = CoreDataHelper.fetchRecord(with: recordID, in: managedContext) as Record?
+                        let fetchedRecord = CoreDataHelper.fetchRecord(with: recordID, in: self.managedContext!) as Record?
                         if let err = error {
                             DispatchQueue.main.async() {
                                 print(err.localizedDescription)
                                 print("Syncing as new record to cloud.")
                             }
                             // couldn't find record, save in cloud as new record
-                            CloudKitHelper.importCDRecord(cdRecord: fetchedRecord!, context: managedContext)
+                            CloudKitHelper.importCDRecord(cdRecord: fetchedRecord!, context: self.managedContext!)
                         } else { // found record, update it in cloud
-                            CloudKitHelper.updateRecordInCloudKit(cdRecord: fetchedRecord!, context: managedContext)
+                            CloudKitHelper.updateRecordInCloudKit(cdRecord: fetchedRecord!, context: self.managedContext!)
                         }
                     }))
                 }
@@ -1004,6 +1004,7 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
                         record.recordID = result.recordID.recordName
                         
                         CoreDataHelper.importImagesFromCloudKit(associatedWith: record, in: self.managedContext!, tableToRefresh: self.warrantiesTableView)
+                        print(record.recordID)
                         CoreDataHelper.importNotesFromCloudKit(associatedWith: record, in: self.managedContext!)
                     }
                 }

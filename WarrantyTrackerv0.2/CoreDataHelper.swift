@@ -367,6 +367,7 @@ class CoreDataHelper {
                         note.lastSynced = Date() as NSDate
                         note.title = result.value(forKey: "title") as? String
                         note.noteString = result.value(forKey: "noteString") as? String
+                        print(associatedWith.title)
                         note.record = associatedWith
                         
                         // save locally

@@ -30,8 +30,7 @@ class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDeleg
     @IBOutlet weak var daysBeforePicker: UIPickerView!
     @IBOutlet weak var lifetimeWarrantySwitch: UISwitch!
     @IBOutlet var cellsReliantOnEndDate: [UITableViewCell]!
-    @IBOutlet weak var beginsPickerCell: UITableViewCell!
-    @IBOutlet weak var endsPickerCell: UITableViewCell!
+    @IBOutlet weak var beginsCell: UITableViewCell!
     var startDatePicked = false
     var endDatePicked = false
     var hasWarranty = true
@@ -54,10 +53,10 @@ class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDeleg
         dateFormatter.dateFormat = "MMM d, yyyy"
         
         selectedStartDate.text = dateFormatter.string(from: beginsPicker.date)
+        selectedStartDate.textColor = tableView.tintColor
         selectedEndDate.text = dateFormatter.string(from: endsPicker.date)
-        
-        //selectedStartDate.textColor = UIColor.red
-        //selectedEndDate.textColor = UIColor.red
+        selectedEndDate.textColor = tableView.tintColor
+
         navBar.title = "Warranty"
         
         for index in 1...31 {
@@ -114,6 +113,8 @@ class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDeleg
 
         if endsPicker.date.compare(dateFormatter.date(from: selectedStartDate.text!)!) == .orderedAscending {
             endsPicker.date = beginsPicker.date
+            let endDate = dateFormatter.string(from: endsPicker.date)
+            self.selectedEndDate.text = endDate
         }
     }
     
