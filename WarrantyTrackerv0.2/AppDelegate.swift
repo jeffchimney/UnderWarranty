@@ -25,43 +25,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         
         // register for notifications
-        UNUserNotificationCenter.current().requestAuthorization(options: [[.alert, .sound, .badge]], completionHandler: { (granted, error) in
-            // Handle Error
-        })
-        
-        let settings = UIUserNotificationSettings(types: [UIUserNotificationType.alert, UIUserNotificationType.badge, UIUserNotificationType.sound], categories: nil)
-        
-        application.registerUserNotificationSettings(settings)
-        application.registerForRemoteNotifications()
-        
-        if let options: NSDictionary = launchOptions as NSDictionary? {
-            let remoteNotification =
-                options[UIApplicationLaunchOptionsKey.remoteNotification]
-            
-            
-            if let notification = remoteNotification {
-                
-                self.application(application, didReceiveRemoteNotification:
-                    notification as! [AnyHashable : Any],
-                                 fetchCompletionHandler:  { (result) in
-                })
-                UIApplication.shared.applicationIconBadgeNumber = 1 // clear current notifications
-            }
-        }
-        
-        // check for network availability
-        do {
-            Network.reachability = try Reachability(hostname: "www.google.com")
-            do {
-                try Network.reachability?.start()
-            } catch let error as Network.Error {
-                print(error)
-            } catch {
-                print(error)
-            }
-        } catch {
-            print(error)
-        }
+//        UNUserNotificationCenter.current().requestAuthorization(options: [[.alert, .sound, .badge]], completionHandler: { (granted, error) in
+//            // Handle Error
+//        })
+//        
+//        let settings = UIUserNotificationSettings(types: [UIUserNotificationType.alert, UIUserNotificationType.badge, UIUserNotificationType.sound], categories: nil)
+//        
+//        application.registerUserNotificationSettings(settings)
+//        application.registerForRemoteNotifications()
+//        
+//        if let options: NSDictionary = launchOptions as NSDictionary? {
+//            let remoteNotification =
+//                options[UIApplicationLaunchOptionsKey.remoteNotification]
+//            
+//            
+//            if let notification = remoteNotification {
+//                
+//                self.application(application, didReceiveRemoteNotification:
+//                    notification as! [AnyHashable : Any],
+//                                 fetchCompletionHandler:  { (result) in
+//                })
+//                UIApplication.shared.applicationIconBadgeNumber = 1 // clear current notifications
+//            }
+//        }
+//        
+//        // check for network availability
+//        do {
+//            Network.reachability = try Reachability(hostname: "www.google.com")
+//            do {
+//                try Network.reachability?.start()
+//            } catch let error as Network.Error {
+//                print(error)
+//            } catch {
+//                print(error)
+//            }
+//        } catch {
+//            print(error)
+//        }
         
         return true
     }
@@ -146,31 +146,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        print("Received notification!")
-        
-        //let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        //let viewController : PrimaryViewController = storyboard.instantiateViewController(withIdentifier: "primaryController") as! PrimaryViewController
-        //window?.rootViewController?.show(viewController, sender: nil)
-        
-        let dict = userInfo as! [String: NSObject]
-        let notification = CKNotification(fromRemoteNotificationDictionary: dict)
-        
-        if notification.subscriptionID == "records-subscription" {
-            
-            PrimaryViewController.handleRecordNotification(notification: notification)
-            completionHandler(.newData)
-        }
-        if notification.subscriptionID == "notes-subscription" {
-            
-            PrimaryViewController.handleNoteNotification(notification: notification)
-            completionHandler(.newData)
-        }
-        if notification.subscriptionID == "images-subscription" {
-            
-            PrimaryViewController.handleImageNotification(notification: notification)
-            completionHandler(.newData)
-        }
-    }
+//    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+//        print("Received notification!")
+//
+//        //let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//        //let viewController : PrimaryViewController = storyboard.instantiateViewController(withIdentifier: "primaryController") as! PrimaryViewController
+//        //window?.rootViewController?.show(viewController, sender: nil)
+//
+//        let dict = userInfo as! [String: NSObject]
+//        let notification = CKNotification(fromRemoteNotificationDictionary: dict)
+//
+//        if notification.subscriptionID == "records-subscription" {
+//
+//            PrimaryViewController.handleRecordNotification(notification: notification)
+//            completionHandler(.newData)
+//        }
+//        if notification.subscriptionID == "notes-subscription" {
+//
+//            PrimaryViewController.handleNoteNotification(notification: notification)
+//            completionHandler(.newData)
+//        }
+//        if notification.subscriptionID == "images-subscription" {
+//
+//            PrimaryViewController.handleImageNotification(notification: notification)
+//            completionHandler(.newData)
+//        }
+//    }
 }
 

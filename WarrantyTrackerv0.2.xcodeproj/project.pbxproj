@@ -35,7 +35,6 @@
 		BEA0D6D71DE8E66800A2AFFE /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA0D6D61DE8E66800A2AFFE /* ImageViewController.swift */; };
 		BEB975C91DE4D59C000DD5F4 /* WarrantyTracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BEB975C71DE4D59C000DD5F4 /* WarrantyTracker.xcdatamodeld */; };
 		BECB41471DFF297200689AA4 /* EditDateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BECB41461DFF297200689AA4 /* EditDateController.swift */; };
-		BECD25D51E60E76C0028BA71 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BECD25D41E60E76C0028BA71 /* CloudKit.framework */; };
 		BED7A1911E2EACEA00B27F2A /* iCarousel.m in Sources */ = {isa = PBXBuildFile; fileRef = BED7A1901E2EACEA00B27F2A /* iCarousel.m */; };
 		BEE224C71E9EB7C7004D92D7 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE224C61E9EB7C7004D92D7 /* Reachability.swift */; };
 		BEE224C91E9EB810004D92D7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEE224C81E9EB810004D92D7 /* SystemConfiguration.framework */; };
@@ -99,7 +98,6 @@
 		BEA0D6D61DE8E66800A2AFFE /* ImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 		BEB975C81DE4D59C000DD5F4 /* WarrantyTracker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WarrantyTracker.xcdatamodel; sourceTree = "<group>"; };
 		BECB41461DFF297200689AA4 /* EditDateController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDateController.swift; sourceTree = "<group>"; };
-		BECD25D41E60E76C0028BA71 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		BED7A18E1E2EACE900B27F2A /* WarrantyTrackerv0.2-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WarrantyTrackerv0.2-Bridging-Header.h"; sourceTree = "<group>"; };
 		BED7A18F1E2EACEA00B27F2A /* iCarousel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iCarousel.h; sourceTree = "<group>"; };
 		BED7A1901E2EACEA00B27F2A /* iCarousel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iCarousel.m; sourceTree = "<group>"; };
@@ -119,7 +117,6 @@
 			files = (
 				BEE224C91E9EB810004D92D7 /* SystemConfiguration.framework in Frameworks */,
 				BE69FF1D1DE4DD830052685E /* CoreData.framework in Frameworks */,
-				BECD25D51E60E76C0028BA71 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,7 +240,6 @@
 			isa = PBXGroup;
 			children = (
 				BEE224C81E9EB810004D92D7 /* SystemConfiguration.framework */,
-				BECD25D41E60E76C0028BA71 /* CloudKit.framework */,
 				BE69FF1C1DE4DD830052685E /* CoreData.framework */,
 			);
 			name = Frameworks;
@@ -329,11 +325,14 @@
 						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
 							com.apple.Push = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.iCloud = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
@@ -588,7 +587,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = WarrantyTrackerv0.2/WarrantyTrackerv0.2.entitlements;
 				DEVELOPMENT_TEAM = JSZY8AYXNH;
 				INFOPLIST_FILE = WarrantyTrackerv0.2/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -607,7 +605,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = WarrantyTrackerv0.2/WarrantyTrackerv0.2.entitlements;
 				DEVELOPMENT_TEAM = JSZY8AYXNH;
 				INFOPLIST_FILE = WarrantyTrackerv0.2/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;

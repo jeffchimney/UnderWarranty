@@ -17,26 +17,22 @@ import MessageUI
 
 class SettingsTableViewController: UITableViewController, MFMailComposeViewControllerDelegate {
     
-    @IBOutlet weak var allowDataSyncLabel: UILabel!
     @IBOutlet weak var allowCameraAccessLabel: UILabel!
     @IBOutlet weak var allowCalendarAccessLabel: UILabel!
     @IBOutlet weak var rateUnderWarantyLabel: UILabel!
     @IBOutlet weak var rateUnderWarrantySubTitle: UILabel!
     @IBOutlet weak var navBar: UINavigationItem!
-    @IBOutlet weak var allowSync: UISwitch!
-    @IBOutlet weak var allowDataSyncSwitch: UISwitch!
     @IBOutlet weak var cameraSwitch: UISwitch!
     @IBOutlet weak var calendarSwitch: UISwitch!
-    @IBOutlet weak var deleteLocalStorageButton: UIButton!
+    @IBOutlet weak var contactDeveloperLabel: UILabel!
     let eventStore = EKEventStore()
     
     override func viewDidLoad() {
         
-        allowDataSyncLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
         allowCameraAccessLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
         allowCalendarAccessLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
         rateUnderWarantyLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
-        deleteLocalStorageButton.titleLabel?.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
+        contactDeveloperLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
         
     }
     
@@ -51,16 +47,16 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
         } else {
             cameraSwitch.isOn = false
         }
-        if UserDefaultsHelper.canSyncUsingData() {
-            allowDataSyncSwitch.isOn = true
-        } else {
-            allowDataSyncSwitch.isOn = false
-        }
-        if UserDefaultsHelper.syncEnabled() {
-            allowSync.isOn = true
-        } else {
-            allowSync.isOn = false
-        }
+//        if UserDefaultsHelper.canSyncUsingData() {
+//            allowDataSyncSwitch.isOn = true
+//        } else {
+//            allowDataSyncSwitch.isOn = false
+//        }
+//        if UserDefaultsHelper.syncEnabled() {
+//            allowSync.isOn = true
+//        } else {
+//            allowSync.isOn = false
+//        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -106,22 +102,6 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
         }
     }
     
-    @IBAction func allowSyncSwitch(_ sender: Any) {
-        if allowSync.isOn {
-            UserDefaultsHelper.setSyncEnabled(to: true)
-        } else {
-            UserDefaultsHelper.setSyncEnabled(to: false)
-        }
-    }
-    
-    @IBAction func allowDataSyncSwitch(_ sender: Any) {
-        if allowDataSyncSwitch.isOn {
-            UserDefaultsHelper.setCanSyncUsingData(to: true)
-        } else {
-            UserDefaultsHelper.setCanSyncUsingData(to: false)
-        }
-    }
-    
     @IBAction func cameraAccessSwitch(_ sender: Any) {
         guard let settingsUrl = URL(string: UIApplicationOpenSettingsURLString) else {
             return
@@ -151,9 +131,9 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
         case 0:
             return "Permissions"
         case 1:
-            return "Feedback"
+            return ""
         case 2:
-            return "Purge"
+            return "Feedback"
         default:
             return ""
         }
@@ -185,46 +165,46 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
         UIApplication.shared.open(url, options: [:], completionHandler: completion)
     }
     
-    @IBAction func deleteLocalStorageButtonPressed(_ sender: Any) {
-        let alertController = UIAlertController(title: "You Sure?", message: "UnderWarranty uses iCloud to back up and sync your Warranties.  Do you want to delete your local storage? (Any records in the cloud will be retrieved when you pull to refresh table view on the main page if there are no records in your local storage)", preferredStyle: UIAlertControllerStyle.alert)
-        
-        // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
-        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel) {
-            (result : UIAlertAction) -> Void in
-            print("Cancel")
-        }
-        
-        let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.destructive) {
-            (result : UIAlertAction) -> Void in
-            print("Delete")
-            
-            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-                return
-            }
-            
-            do {
-                let managedContext = appDelegate.persistentContainer.viewContext
-                
-                let fetchNote = NSFetchRequest<NSFetchRequestResult>(entityName: "Note")
-                let requestNote = NSBatchDeleteRequest(fetchRequest: fetchNote)
-                _ = try managedContext.execute(requestNote)
-                
-                let fetchImage = NSFetchRequest<NSFetchRequestResult>(entityName: "Image")
-                let requestImage = NSBatchDeleteRequest(fetchRequest: fetchImage)
-                _ = try managedContext.execute(requestImage)
-                
-                let fetchRecord = NSFetchRequest<NSFetchRequestResult>(entityName: "Record")
-                let requestRecord = NSBatchDeleteRequest(fetchRequest: fetchRecord)
-                _ = try managedContext.execute(requestRecord)
-            } catch {
-                print("Failed to delete everything in core data")
-            }
-        }
-        
-        alertController.addAction(cancelAction)
-        alertController.addAction(deleteAction)
-        self.present(alertController, animated: true, completion: nil)
-    }
+//    @IBAction func deleteLocalStorageButtonPressed(_ sender: Any) {
+//        let alertController = UIAlertController(title: "You Sure?", message: "UnderWarranty uses iCloud to back up and sync your Warranties.  Do you want to delete your local storage? (Any records in the cloud will be retrieved when you pull to refresh table view on the main page if there are no records in your local storage)", preferredStyle: UIAlertControllerStyle.alert)
+//
+//        // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
+//        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel) {
+//            (result : UIAlertAction) -> Void in
+//            print("Cancel")
+//        }
+//
+//        let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.destructive) {
+//            (result : UIAlertAction) -> Void in
+//            print("Delete")
+//
+//            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+//                return
+//            }
+//
+//            do {
+//                let managedContext = appDelegate.persistentContainer.viewContext
+//
+//                let fetchNote = NSFetchRequest<NSFetchRequestResult>(entityName: "Note")
+//                let requestNote = NSBatchDeleteRequest(fetchRequest: fetchNote)
+//                _ = try managedContext.execute(requestNote)
+//
+//                let fetchImage = NSFetchRequest<NSFetchRequestResult>(entityName: "Image")
+//                let requestImage = NSBatchDeleteRequest(fetchRequest: fetchImage)
+//                _ = try managedContext.execute(requestImage)
+//
+//                let fetchRecord = NSFetchRequest<NSFetchRequestResult>(entityName: "Record")
+//                let requestRecord = NSBatchDeleteRequest(fetchRequest: fetchRecord)
+//                _ = try managedContext.execute(requestRecord)
+//            } catch {
+//                print("Failed to delete everything in core data")
+//            }
+//        }
+//
+//        alertController.addAction(cancelAction)
+//        alertController.addAction(deleteAction)
+//        self.present(alertController, animated: true, completion: nil)
+//    }
     
     func sendEmail() {
         let composeVC = MFMailComposeViewController()

@@ -96,8 +96,6 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        navigationController?.setToolbarHidden(false, animated: true)
-        
         if isEditingRecord {
             if images.count != 0 {
                 for index in 0...images.count-1 {
@@ -107,10 +105,6 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
             deleteButton.isEnabled = true
         }
         selectedNotesIndex = -1
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        navigationController?.setToolbarHidden(true, animated: true)
     }
     
     func startJiggling(viewToShake: UIImageView) {
@@ -191,7 +185,7 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
         do {
             managedContext.delete(record)
             try managedContext.save()
-            CloudKitHelper.deleteWithID(recordID: noteIDs[index-1])
+            // CloudKitHelper.deleteWithID(recordID: noteIDs[index-1])
         } catch {
             print("The record couldn't be deleted.")
         }
@@ -277,13 +271,13 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
                     }
                     
                     // check what the current connection is.  If wifi, refresh.  If data, and sync by data is enabled, refresh.
-                    let conn = UserDefaultsHelper.currentConnection()
-                    if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
-                        CloudKitHelper.updateRecordInCloudKit(cdRecord: record, context: managedContext)
-                    } else {
-                        // queue up the record to sync when you have a good connection
-                        UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
-                    }
+//                    let conn = UserDefaultsHelper.currentConnection()
+//                    if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
+//                        CloudKitHelper.updateRecordInCloudKit(cdRecord: record, context: managedContext)
+//                    } else {
+//                        // queue up the record to sync when you have a good connection
+//                        UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
+//                    }
                     navigationController?.popViewController(animated: true)
                 } catch {
                     print("The record couldn't be saved.")
@@ -443,7 +437,7 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
         do {
             managedContext.delete(record)
             try managedContext.save()
-            CloudKitHelper.deleteWithID(recordID: imageIDs[indexToDelete])
+            //CloudKitHelper.deleteWithID(recordID: imageIDs[indexToDelete])
         } catch {
             print("The record couldn't be deleted.")
         }
@@ -534,13 +528,13 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
             try managedContext.save()
             
             // check what the current connection is.  If wifi, refresh.  If data, and sync by data is enabled, refresh.
-            let conn = UserDefaultsHelper.currentConnection()
-            if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
-                CloudKitHelper.updateRecordInCloudKit(cdRecord: record, context: managedContext)
-            } else {
-                // queue up the record to sync when you have a good connection
-                UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
-            }
+//            let conn = UserDefaultsHelper.currentConnection()
+//            if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
+//                CloudKitHelper.updateRecordInCloudKit(cdRecord: record, context: managedContext)
+//            } else {
+//                // queue up the record to sync when you have a good connection
+//                UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
+//            }
         } catch {
             print("Error deleting record")
         }
@@ -562,13 +556,13 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
                 try managedContext.save()
                 
                 // check what the current connection is.  If wifi, refresh.  If data, and sync by data is enabled, refresh.
-                let conn = UserDefaultsHelper.currentConnection()
-                if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
-                    CloudKitHelper.updateRecordInCloudKit(cdRecord: record, context: managedContext)
-                } else {
-                    // queue up the record to sync when you have a good connection
-                    UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
-                }
+//                let conn = UserDefaultsHelper.currentConnection()
+//                if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
+//                    CloudKitHelper.updateRecordInCloudKit(cdRecord: record, context: managedContext)
+//                } else {
+//                    // queue up the record to sync when you have a good connection
+//                    UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
+//                }
                 
                 navigationController?.popViewController(animated: true)
             } catch {

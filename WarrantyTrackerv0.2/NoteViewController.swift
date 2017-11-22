@@ -81,13 +81,13 @@ class NoteViewController: UIViewController, UITextFieldDelegate {
                 print("Updated note in CoreData")
                 
                 // check what the current connection is.  If wifi, refresh.  If data, and sync by data is enabled, refresh.
-                let conn = UserDefaultsHelper.currentConnection()
-                if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
-                    CloudKitHelper.updateRecordInCloudKit(cdRecord: record, context: managedContext)
-                } else {
-                    // queue up the record to sync when you have a good connection
-                    UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
-                }
+//                let conn = UserDefaultsHelper.currentConnection()
+//                if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
+//                    CloudKitHelper.updateRecordInCloudKit(cdRecord: record, context: managedContext)
+//                } else {
+//                    // queue up the record to sync when you have a good connection
+//                    UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
+//                }
             } catch {
                 print("Problems updating note to CoreData")
             }
@@ -106,13 +106,13 @@ class NoteViewController: UIViewController, UITextFieldDelegate {
                         print("Updated note in CoreData")
                         
                         // check what the current connection is.  If wifi, refresh.  If data, and sync by data is enabled, refresh.
-                        let conn = UserDefaultsHelper.currentConnection()
-                        if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
-                            CloudKitHelper.saveNoteToCloud(noteRecord: returnedNote!, associatedRecord: record!)
-                        } else {
-                            // queue up the record to sync when you have a good connection
-                            UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
-                        }
+//                        let conn = UserDefaultsHelper.currentConnection()
+//                        if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
+//                            CloudKitHelper.saveNoteToCloud(noteRecord: returnedNote!, associatedRecord: record!)
+//                        } else {
+//                            // queue up the record to sync when you have a good connection
+//                            UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
+//                        }
                     } catch {
                         print("Problems updating note to CoreData")
                     }
@@ -129,13 +129,13 @@ class NoteViewController: UIViewController, UITextFieldDelegate {
                     print("Saved note to CoreData")
                     
                     // check what the current connection is.  If wifi, refresh.  If data, and sync by data is enabled, refresh.
-                    let conn = UserDefaultsHelper.currentConnection()
-                    if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
-                        CloudKitHelper.saveNoteToCloud(noteRecord: note, associatedRecord: record!)
-                    } else {
-                        // queue up the record to sync when you have a good connection
-                        UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
-                    }
+//                    let conn = UserDefaultsHelper.currentConnection()
+//                    if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
+//                        CloudKitHelper.saveNoteToCloud(noteRecord: note, associatedRecord: record!)
+//                    } else {
+//                        // queue up the record to sync when you have a good connection
+//                        UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
+//                    }
                 } catch {
                     print("Problems saving note to CoreData")
                 }

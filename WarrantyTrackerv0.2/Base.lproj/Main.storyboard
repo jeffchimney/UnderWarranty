@@ -182,8 +182,39 @@
                                     <action selector="cameraSwitchPressed:" destination="9pv-A4-QxB" eventType="touchUpInside" id="4tx-Og-I8h"/>
                                 </connections>
                             </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qyP-Pk-1XD">
+                                <rect key="frame" x="0.0" y="593" width="375" height="74"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="08d-0p-s0e">
+                                        <rect key="frame" x="8" y="26" width="22" height="22"/>
+                                        <connections>
+                                            <action selector="openPhotoLibraryButtonWithSender:" destination="9pv-A4-QxB" eventType="touchUpInside" id="X35-dm-pkR"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1kV-9d-Vpg">
+                                        <rect key="frame" x="162" y="12" width="50" height="50"/>
+                                        <color key="backgroundColor" red="0.093242801730000005" green="0.40742087360000001" blue="0.58794665339999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="50" id="FZp-wY-Zjo"/>
+                                        </constraints>
+                                        <color key="tintColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        <connections>
+                                            <action selector="openCameraButtonWithSender:" destination="9pv-A4-QxB" eventType="touchUpInside" id="nLv-wb-xjp"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="08d-0p-s0e" firstAttribute="centerY" secondItem="1kV-9d-Vpg" secondAttribute="centerY" id="5Qf-lf-obm"/>
+                                    <constraint firstItem="08d-0p-s0e" firstAttribute="leading" secondItem="qyP-Pk-1XD" secondAttribute="leadingMargin" id="TGF-sg-cgO"/>
+                                    <constraint firstItem="1kV-9d-Vpg" firstAttribute="centerX" secondItem="qyP-Pk-1XD" secondAttribute="centerX" id="fzQ-ra-Fcy"/>
+                                    <constraint firstItem="1kV-9d-Vpg" firstAttribute="centerY" secondItem="qyP-Pk-1XD" secondAttribute="centerY" id="hFq-7v-Yit"/>
+                                    <constraint firstAttribute="height" constant="74" id="mTg-u9-N4u"/>
+                                    <constraint firstItem="1kV-9d-Vpg" firstAttribute="top" secondItem="qyP-Pk-1XD" secondAttribute="top" constant="12" id="vgO-Cy-0hz"/>
+                                </constraints>
+                            </view>
                             <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.90000000000000002" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="GxR-yk-BVk">
-                                <rect key="frame" x="-375" y="518" width="375" height="75"/>
+                                <rect key="frame" x="-355" y="518" width="375" height="75"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="75" id="R3N-mq-2EA"/>
@@ -221,7 +252,7 @@
                                 </cells>
                             </collectionView>
                             <view alpha="0.84999999999999998" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Upe-HG-UH6">
-                                <rect key="frame" x="0.0" y="518" width="30" height="75"/>
+                                <rect key="frame" x="20" y="518" width="30" height="75"/>
                                 <subviews>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" rowHeight="75" translatesAutoresizingMaskIntoConstraints="NO" id="iAE-nJ-YdL">
                                         <rect key="frame" x="0.0" y="1" width="30" height="75"/>
@@ -238,37 +269,6 @@
                                     <constraint firstAttribute="height" constant="75" id="nJQ-q3-gIE"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qyP-Pk-1XD">
-                                <rect key="frame" x="0.0" y="593" width="375" height="74"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="08d-0p-s0e">
-                                        <rect key="frame" x="8" y="26" width="22" height="22"/>
-                                        <connections>
-                                            <action selector="openPhotoLibraryButtonWithSender:" destination="9pv-A4-QxB" eventType="touchUpInside" id="X35-dm-pkR"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1kV-9d-Vpg">
-                                        <rect key="frame" x="162" y="12" width="50" height="50"/>
-                                        <color key="backgroundColor" red="0.093242801730000005" green="0.40742087360000001" blue="0.58794665339999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="FZp-wY-Zjo"/>
-                                        </constraints>
-                                        <color key="tintColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                        <connections>
-                                            <action selector="openCameraButtonWithSender:" destination="9pv-A4-QxB" eventType="touchUpInside" id="nLv-wb-xjp"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstItem="08d-0p-s0e" firstAttribute="centerY" secondItem="1kV-9d-Vpg" secondAttribute="centerY" id="5Qf-lf-obm"/>
-                                    <constraint firstItem="08d-0p-s0e" firstAttribute="leading" secondItem="qyP-Pk-1XD" secondAttribute="leadingMargin" id="TGF-sg-cgO"/>
-                                    <constraint firstItem="1kV-9d-Vpg" firstAttribute="centerX" secondItem="qyP-Pk-1XD" secondAttribute="centerX" id="fzQ-ra-Fcy"/>
-                                    <constraint firstItem="1kV-9d-Vpg" firstAttribute="centerY" secondItem="qyP-Pk-1XD" secondAttribute="centerY" id="hFq-7v-Yit"/>
-                                    <constraint firstAttribute="height" constant="74" id="mTg-u9-N4u"/>
-                                    <constraint firstItem="1kV-9d-Vpg" firstAttribute="top" secondItem="qyP-Pk-1XD" secondAttribute="top" constant="12" id="vgO-Cy-0hz"/>
-                                </constraints>
-                            </view>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -282,7 +282,7 @@
                             <constraint firstItem="RCm-eY-5gk" firstAttribute="centerY" secondItem="lMq-lz-NLr" secondAttribute="centerY" id="VGR-6i-rKU"/>
                             <constraint firstItem="lMq-lz-NLr" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leading" id="de6-hI-eqr"/>
                             <constraint firstItem="Upe-HG-UH6" firstAttribute="leading" secondItem="GxR-yk-BVk" secondAttribute="trailing" id="g8o-uC-Vw2"/>
-                            <constraint firstItem="lMq-lz-NLr" firstAttribute="leading" secondItem="GxR-yk-BVk" secondAttribute="trailing" id="gWQ-9U-c1f"/>
+                            <constraint firstItem="lMq-lz-NLr" firstAttribute="leading" secondItem="GxR-yk-BVk" secondAttribute="trailing" constant="-20" id="gWQ-9U-c1f"/>
                             <constraint firstItem="lMq-lz-NLr" firstAttribute="bottom" secondItem="Upe-HG-UH6" secondAttribute="bottom" id="gkg-Zq-rWc"/>
                             <constraint firstItem="qyP-Pk-1XD" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leading" id="iEJ-Vk-CBl"/>
                             <constraint firstAttribute="trailing" secondItem="qyP-Pk-1XD" secondAttribute="trailing" id="n1J-4g-zDS"/>
@@ -329,64 +329,8 @@
                         <sections>
                             <tableViewSection id="kLo-Ec-iME">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="50" id="kEM-fS-z7d" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="35" width="375" height="50"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="kEM-fS-z7d" id="10q-Ig-MK0">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="x3L-ZA-6eC">
-                                                    <rect key="frame" x="318" y="10" width="51" height="31"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <connections>
-                                                        <action selector="allowSyncSwitch:" destination="s0B-oZ-MX5" eventType="valueChanged" id="Jna-NC-RAA"/>
-                                                        <action selector="toggleSwitch" destination="kEM-fS-z7d" eventType="valueChanged" id="GgB-l0-pq6"/>
-                                                    </connections>
-                                                </switch>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Allow Cloud Sync" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z0e-mX-p37">
-                                                    <rect key="frame" x="16" y="14" width="294" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                        </tableViewCellContentView>
-                                        <connections>
-                                            <outlet property="toggle" destination="x3L-ZA-6eC" id="Rdl-Em-i67"/>
-                                        </connections>
-                                    </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="50" id="N2U-SH-17r" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="85" width="375" height="50"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="N2U-SH-17r" id="oH3-AU-BbM">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uon-6c-rGy">
-                                                    <rect key="frame" x="318" y="10" width="51" height="31"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <connections>
-                                                        <action selector="allowDataSyncSwitch:" destination="s0B-oZ-MX5" eventType="valueChanged" id="sbA-x9-DHH"/>
-                                                        <action selector="toggleSwitch" destination="N2U-SH-17r" eventType="valueChanged" id="OAC-3W-efG"/>
-                                                    </connections>
-                                                </switch>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Allow Sync to use Data" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="czu-jX-diO">
-                                                    <rect key="frame" x="16" y="14" width="294" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                        </tableViewCellContentView>
-                                        <connections>
-                                            <outlet property="toggle" destination="uon-6c-rGy" id="eU0-zy-bbo"/>
-                                        </connections>
-                                    </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="50" id="MXM-1v-fgT" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="135" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="35" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="MXM-1v-fgT" id="XTO-qw-5MM">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
@@ -410,7 +354,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="50" id="Hnb-FT-wI2" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="185" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="85" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Hnb-FT-wI2" id="Da9-v0-qe7">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
@@ -438,7 +382,7 @@
                             <tableViewSection footerTitle="" id="nnc-az-K89">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="474-cL-Ylh" detailTextLabel="2tU-Cd-27l" rowHeight="50" style="IBUITableViewCellStyleSubtitle" id="5LA-tC-cCh" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="271" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="171" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5LA-tC-cCh" id="drG-XZ-VfD">
                                             <rect key="frame" x="0.0" y="0.0" width="341" height="49.5"/>
@@ -462,7 +406,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="YxM-Yy-3lD" detailTextLabel="l2z-Sp-FMm" rowHeight="50" style="IBUITableViewCellStyleSubtitle" id="NXp-vo-v7Z" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="321" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="221" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="NXp-vo-v7Z" id="AW8-2s-Dnz">
                                             <rect key="frame" x="0.0" y="0.0" width="341" height="49.5"/>
@@ -487,34 +431,6 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection footerTitle="" id="eWL-o9-a3S">
-                                <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="50" id="7cz-zE-a8U" customClass="TitleAndSwitchTableViewCell" customModule="WarrantyTrackerv0_2" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="407" width="375" height="50"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="7cz-zE-a8U" id="tDU-Ac-oKJ">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6XQ-zZ-Ohj">
-                                                    <rect key="frame" x="16" y="10" width="343" height="30"/>
-                                                    <state key="normal" title="Delete local storage.">
-                                                        <color key="titleColor" red="1" green="0.049691020330000002" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    </state>
-                                                    <connections>
-                                                        <action selector="deleteLocalStorageButtonPressed:" destination="s0B-oZ-MX5" eventType="touchUpInside" id="9BX-tX-Q6x"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="6XQ-zZ-Ohj" firstAttribute="leading" secondItem="tDU-Ac-oKJ" secondAttribute="leadingMargin" id="BIT-pu-l49"/>
-                                                <constraint firstItem="6XQ-zZ-Ohj" firstAttribute="centerY" secondItem="tDU-Ac-oKJ" secondAttribute="centerY" id="PXb-5Q-dHL"/>
-                                                <constraint firstItem="6XQ-zZ-Ohj" firstAttribute="trailing" secondItem="tDU-Ac-oKJ" secondAttribute="trailingMargin" id="g6D-mv-8sG"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </cells>
-                            </tableViewSection>
                         </sections>
                         <connections>
                             <outlet property="dataSource" destination="s0B-oZ-MX5" id="ivr-u9-9tu"/>
@@ -525,12 +441,9 @@
                     <connections>
                         <outlet property="allowCalendarAccessLabel" destination="Xc5-yR-uMF" id="gEt-Bd-ZZ6"/>
                         <outlet property="allowCameraAccessLabel" destination="Ru6-Ue-T4T" id="Sc9-L9-ZDa"/>
-                        <outlet property="allowDataSyncLabel" destination="Z0e-mX-p37" id="xGE-ek-mOu"/>
-                        <outlet property="allowDataSyncSwitch" destination="uon-6c-rGy" id="HxA-mf-H1T"/>
-                        <outlet property="allowSync" destination="x3L-ZA-6eC" id="rI9-CC-4L2"/>
                         <outlet property="calendarSwitch" destination="Qml-C3-Kco" id="wiy-5O-WmX"/>
                         <outlet property="cameraSwitch" destination="VeP-bD-Gqc" id="8dC-Eo-aWk"/>
-                        <outlet property="deleteLocalStorageButton" destination="6XQ-zZ-Ohj" id="6Ry-C9-RTD"/>
+                        <outlet property="contactDeveloperLabel" destination="YxM-Yy-3lD" id="IPl-Tv-5ah"/>
                         <outlet property="navBar" destination="tTB-2A-IVi" id="qwp-zc-RRl"/>
                         <outlet property="rateUnderWarantyLabel" destination="474-cL-Ylh" id="scB-jm-3Vb"/>
                         <outlet property="rateUnderWarrantySubTitle" destination="2tU-Cd-27l" id="WUO-4m-ihd"/>
@@ -563,7 +476,7 @@
                                 <rect key="frame" x="0.0" y="20" width="375" height="571"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qln-UP-J00">
-                                <rect key="frame" x="149.5" y="615" width="76" height="30"/>
+                                <rect key="frame" x="150" y="615" width="76" height="30"/>
                                 <state key="normal" title="Take Photo"/>
                                 <connections>
                                     <action selector="openCameraButtonWithSender:" destination="9pv-A4-QxB" eventType="touchUpInside" id="Son-e4-i9r"/>
@@ -645,7 +558,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="kpM-Me-iu8">
-                                                    <rect key="frame" x="28" y="-34" width="320" height="216"/>
+                                                    <rect key="frame" x="27.5" y="-34" width="320" height="216"/>
                                                     <date key="date" timeIntervalSinceReferenceDate="532600219.55202198">
                                                         <!--2017-11-17 08:30:19 +0000-->
                                                     </date>
@@ -762,7 +675,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kcv-x0-8OT">
-                                                    <rect key="frame" x="28" y="-59" width="320" height="216"/>
+                                                    <rect key="frame" x="27.5" y="-59" width="320" height="216"/>
                                                 </pickerView>
                                             </subviews>
                                             <constraints>
@@ -1226,7 +1139,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HBQ-cF-z2k">
-                                <rect key="frame" x="162" y="561" width="50" height="50"/>
+                                <rect key="frame" x="162.5" y="561" width="50" height="50"/>
                                 <color key="backgroundColor" red="0.093242801730000005" green="0.40742087360000001" blue="0.58794665339999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="BOh-PD-uMZ"/>
@@ -1369,7 +1282,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HgV-MJ-c5E">
-                                            <rect key="frame" x="176" y="13" width="22" height="22"/>
+                                            <rect key="frame" x="176.5" y="13" width="22" height="22"/>
                                             <connections>
                                                 <action selector="addButtonPushed:" destination="ex8-kY-eAc" eventType="touchUpInside" id="ccb-Wm-phI"/>
                                             </connections>

@@ -32,6 +32,14 @@ class UserDefaultsHelper {
         defaults.set(bool, forKey: "SignedIn")
     }
     
+    static func deleteAfterDays() {
+        
+    }
+    
+    static func deleteAfter(days: Int) {
+        
+    }
+    
     static func canSyncUsingData() -> Bool {
         return defaults.object(forKey: "SyncUsingData") as! Bool
     }

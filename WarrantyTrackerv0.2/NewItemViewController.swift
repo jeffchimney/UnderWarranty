@@ -84,6 +84,8 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
             openSettingsButton.isHidden = true
             cameraAccessLabel.isHidden = true
             imageView.isHidden = false
+            imageView.layer.sublayers?.removeAll()
+            imageView.contentMode = .scaleAspectFill
             setUpCamera()
         }
         else
@@ -244,8 +246,8 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
                     let image = UIImage(cgImage: cgImageRef!, scale: 1.0, orientation: UIImageOrientation.right)
                     self.session?.stopRunning()
                     self.imageView.layer.sublayers?.removeAll()
-                    self.imageView.contentMode = .scaleAspectFill
                     self.imageView.image = image
+                    self.imageView.contentMode = .scaleAspectFill
                     
                     let when = DispatchTime.now() + 1 // change 1 to desired number of seconds
                     DispatchQueue.main.asyncAfter(deadline: when) {
@@ -267,7 +269,7 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if let pickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
-            imageView.contentMode = .scaleAspectFit
+            //imageView.contentMode = .scaleAspectFill
             session?.stopRunning()
             imageView.layer.sublayers?.removeAll()
             imageView.contentMode = .scaleAspectFill
