@@ -145,9 +145,10 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
         switch(gesture.state) {
         case UIGestureRecognizerState.began:
             selectedPhotoIndexPath = imagesCollectionView.indexPathForItem(at: gesture.location(in: imagesCollectionView))
-            let pressedCell = imagesCollectionView.cellForItem(at: selectedPhotoIndexPath)
-            pressedViewCenter = (pressedCell?.center)!
-            imagesCollectionView.beginInteractiveMovementForItem(at: selectedPhotoIndexPath)
+            if let pressedCell = imagesCollectionView.cellForItem(at: selectedPhotoIndexPath) {
+                pressedViewCenter = pressedCell.center
+                imagesCollectionView.beginInteractiveMovementForItem(at: selectedPhotoIndexPath)
+            }
         case UIGestureRecognizerState.changed:
             imagesCollectionView.updateInteractiveMovementTargetPosition(gesture.location(in: gesture.view!))
         case UIGestureRecognizerState.ended:
@@ -194,7 +195,6 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     func setUpCamera() {
-        //if !imagePicked {
         session = AVCaptureSession()
         session!.sessionPreset = AVCaptureSessionPresetPhoto
         let backCamera = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
@@ -220,12 +220,11 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
                 videoPreviewLayer = AVCaptureVideoPreviewLayer(session: session)
                 videoPreviewLayer!.videoGravity = AVLayerVideoGravityResizeAspectFill
                 videoPreviewLayer!.connection?.videoOrientation = AVCaptureVideoOrientation.portrait
+                videoPreviewLayer!.frame = imageView.bounds
                 imageView.layer.addSublayer(videoPreviewLayer!)
                 session!.startRunning()
             }
         }
-        videoPreviewLayer!.frame = imageView.bounds
-        //}
     }
     
     override func didReceiveMemoryWarning() {
@@ -339,6 +338,7 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath as IndexPath) as! PhotoCollectionViewCell
         cell.imageView.image = UIImage(data: imageDataToSave[indexPath.row]!)
+        cell.imageView.contentMode = .scaleAspectFill
         //cell.transform = CGAffineTransform(scaleX: -1, y: 1)
         
         return cell
