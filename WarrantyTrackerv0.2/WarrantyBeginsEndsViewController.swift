@@ -42,8 +42,10 @@ class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDeleg
     var calendars: [EKCalendar]?
     
     var selectedIndexPathRow = 0
-    var beginsCellIsShowing = false
-    var endsCellIsShowing = false
+    var beginsCellIsShowing = true
+    var endsCellIsShowing = true
+    
+    var originalCellHeights: [CGFloat] = [44, 140, 44, 44, 140, 44, 100, 44]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,15 +90,17 @@ class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDeleg
     }
 
     @IBAction func lifetimeWarrantySwitched(_ sender: Any) {
-        if lifetimeWarrantySwitch.isOn {
-            for cell in cellsReliantOnEndDate {
-                cell.isHidden = true
-            }
-        } else {
-            for cell in cellsReliantOnEndDate {
-                cell.isHidden = false
-            }
-        }
+        tableView.beginUpdates()
+        tableView.endUpdates()
+//        if lifetimeWarrantySwitch.isOn {
+//            for cell in cellsReliantOnEndDate {
+//                cell.isHidden = true
+//            }
+//        } else {
+//            for cell in cellsReliantOnEndDate {
+//                cell.isHidden = false
+//            }
+//        }
     }
     
     @IBAction func pickerChanged(_ sender: UIDatePicker) {
@@ -306,51 +310,49 @@ class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDeleg
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0 || indexPath.row == 3 {
-            selectedIndexPathRow = indexPath.row
-            tableView.reloadData()
+            if indexPath.row == 0 {
+                beginsCellIsShowing = !beginsCellIsShowing
+            } else {
+                endsCellIsShowing = !endsCellIsShowing
+            }
+            
+            tableView.beginUpdates()
+            tableView.endUpdates()
         }
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.row == selectedIndexPathRow+1 {
-            if selectedIndexPathRow == 0 {
-                if beginsCellIsShowing {
-                    beginsCellIsShowing = !beginsCellIsShowing
-                    return 0
-                } else {
-                    beginsCellIsShowing = !beginsCellIsShowing
-                    return 150
-                }
-            } else if selectedIndexPathRow == 3 {
-                if endsCellIsShowing {
-                    endsCellIsShowing = !endsCellIsShowing
-                    return 0
-                } else {
-                    endsCellIsShowing = !endsCellIsShowing
-                    return 150
-                }
-            }
-            return 0
-        } else if indexPath.row == 0 || indexPath.row == 2 || indexPath.row == 3  || indexPath.row == 5 || indexPath.row == 7 {
-            return 44
-        } else if indexPath.row == 1 || indexPath.row == 4 {
+        if lifetimeWarrantySwitch.isOn {
             if indexPath.row == 1 {
                 if beginsCellIsShowing {
-                    return 150
-                } else {
                     return 0
+                } else {
+                    return 140
                 }
             }
-            if indexPath.row == 4 {
-                if endsCellIsShowing {
-                    return 150
-                } else {
-                    return 0
-                }
+            
+            if indexPath.row > 2 {
+                return 0
+            } else {
+                return originalCellHeights[indexPath.row]
             }
-            return 150
         } else {
-            return 100
+            
+            if indexPath.row == 1 {
+                if beginsCellIsShowing {
+                    return 0
+                } else {
+                    return 140
+                }
+            } else if indexPath.row == 4 {
+                if endsCellIsShowing {
+                    return 0
+                } else {
+                    return 140
+                }
+            }
+            
+            return originalCellHeights[indexPath.row]
         }
     }
 }

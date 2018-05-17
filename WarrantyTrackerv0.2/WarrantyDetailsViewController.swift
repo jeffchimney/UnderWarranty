@@ -43,20 +43,20 @@ class WarrantyDetailsViewController: UIViewController, UITextFieldDelegate, UITe
         titleTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         
         // fonts
-        let defaultFont = UIFont(name: "Kohinoor Bangla", size: 15)!
-        let attributes = [
-            NSFontAttributeName: defaultFont
-        ]
-        
-        titleTextField.defaultTextAttributes = attributes
-        descriptionTextField.font = UIFont(name: "Kohinoor Bangla", size: 15)!
+//        let defaultFont = UIFont(name: "Kohinoor Bangla", size: 15)!
+//        let attributes = [
+//            NSFontAttributeName: defaultFont
+//        ]
+//
+//        titleTextField.defaultTextAttributes = attributes
+//        descriptionTextField.font = UIFont(name: "Kohinoor Bangla", size: 15)!
         
         let borderColor : UIColor = UIColor(red: 0.85, green: 0.85, blue: 0.85, alpha: 1.0)
         descriptionTextField.layer.borderWidth = 0.5
         descriptionTextField.layer.borderColor = borderColor.cgColor
         descriptionTextField.layer.cornerRadius = 5.0
         
-        self.navigationController?.navigationBar.titleTextAttributes = [NSFontAttributeName: UIFont(name: "Kohinoor Telugu", size: 18)!]
+        //self.navigationController?.navigationBar.titleTextAttributes = [NSFontAttributeName: UIFont(name: "Kohinoor Telugu", size: 18)!]
         
         navigationController?.isToolbarHidden = true
     }

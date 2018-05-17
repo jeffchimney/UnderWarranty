@@ -86,13 +86,13 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
         }
         deleteButton.isEnabled = false
         
-        let defaultBarButtonFont = UIFont(name: "Kohinoor Bangla", size: 17)!
-        let barButtonAttributes = [
-            NSFontAttributeName: defaultBarButtonFont
-        ]
-        
-        deleteButton.setTitleTextAttributes(barButtonAttributes, for: .normal)
-        editButton.setTitleTextAttributes(barButtonAttributes, for: .normal)
+//        let defaultBarButtonFont = UIFont(name: "Kohinoor Bangla", size: 17)!
+//        let barButtonAttributes = [
+//            NSFontAttributeName: defaultBarButtonFont
+//        ]
+//
+//        deleteButton.setTitleTextAttributes(barButtonAttributes, for: .normal)
+//        editButton.setTitleTextAttributes(barButtonAttributes, for: .normal)
     }
     
     override func viewWillAppear(_ animated: Bool) {

@@ -29,10 +29,10 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
     
     override func viewDidLoad() {
         
-        allowCameraAccessLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
-        allowCalendarAccessLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
-        rateUnderWarantyLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
-        contactDeveloperLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
+//        allowCameraAccessLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
+//        allowCalendarAccessLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
+//        rateUnderWarantyLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
+//        contactDeveloperLabel.defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
         
     }
     

@@ -39,13 +39,13 @@ class NoteViewController: UIViewController, UITextFieldDelegate {
         }
         
         // fonts
-        let defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
-        let attributes = [
-            NSFontAttributeName: defaultFont
-        ]
-        
-        noteTitle.defaultTextAttributes = attributes
-        noteBody.font = UIFont(name: "Kohinoor Bangla", size: 15)!
+//        let defaultFont = UIFont(name: "Kohinoor Bangla", size: 17)!
+//        let attributes = [
+//            NSFontAttributeName: defaultFont
+//        ]
+//        
+//        noteTitle.defaultTextAttributes = attributes
+//        noteBody.font = UIFont(name: "Kohinoor Bangla", size: 15)!
     }
     
     override func viewWillDisappear(_ animated: Bool) {

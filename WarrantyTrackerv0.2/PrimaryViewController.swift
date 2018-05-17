@@ -112,23 +112,23 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         //NotificationCenter.default.addObserver(self, selector: #selector(statusManager), name: .flagsChanged, object: Network.reachability)
         
         // fonts
-        let defaultFont = UIFont(name: "Kohinoor Bangla", size: 15)!
-        let attributes = [
-            NSFontAttributeName: defaultFont
-        ]
-        let defaultBarButtonFont = UIFont(name: "Kohinoor Bangla", size: 17)!
-        let barButtonAttributes = [
-            NSFontAttributeName: defaultBarButtonFont
-        ]
-        
-        sortBySegmentControl.setTitleTextAttributes(attributes, for: .normal)
-        searchButton.setTitleTextAttributes(barButtonAttributes, for: .normal)
+//        let defaultFont = UIFont(name: "Kohinoor Bangla", size: 15)!
+//        let attributes = [
+//            NSFontAttributeName: defaultFont
+//        ]
+//        let defaultBarButtonFont = UIFont(name: "Kohinoor Bangla", size: 17)!
+//        let barButtonAttributes = [
+//            NSFontAttributeName: defaultBarButtonFont
+//        ]
+//
+//        sortBySegmentControl.setTitleTextAttributes(attributes, for: .normal)
+//        searchButton.setTitleTextAttributes(barButtonAttributes, for: .normal)
         
          let textFieldInsideSearchBar = searchController.searchBar.value(forKey: "searchField") as! UITextField
-        textFieldInsideSearchBar.defaultTextAttributes = attributes
+        //textFieldInsideSearchBar.defaultTextAttributes = attributes
         
         //self.navigationController?.isToolbarHidden = false
-        self.navigationController?.navigationBar.titleTextAttributes = [NSFontAttributeName: UIFont(name: "Kohinoor Telugu", size: 18)!]
+        //self.navigationController?.navigationBar.titleTextAttributes = [NSFontAttributeName: UIFont(name: "Kohinoor Telugu", size: 18)!]
         
         //updateUserInterface()
         handleRefresh(refreshControl: refreshControl)
