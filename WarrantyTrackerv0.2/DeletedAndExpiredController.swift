@@ -146,7 +146,8 @@ class DeletedAndExpiredController: UIViewController, UITableViewDelegate, UITabl
         
         cell.warrantyImageView.contentMode = .scaleAspectFit
         cell.title.textColor = cell.tintColor
-        cell.backgroundColor = UIColor(colorLiteralRed: 189, green: 195, blue: 201, alpha: 1.0)
+        //cell.backgroundColor = UIColor(displayP3Red: 189/255, green: 195/255, blue: 201/255, alpha: 1.0)
+        
         
         return cell
     }
@@ -172,7 +173,7 @@ class DeletedAndExpiredController: UIViewController, UITableViewDelegate, UITabl
         // recover record on press recover
         let recover = UITableViewRowAction(style: .normal, title: "Recover") { action, index in
             if indexPath.section == 1 { // recently deleted
-                CoreDataHelper.setRecentlyDeletedFalse(for: self.deletedRecords[indexPath.row], in: self.managedContext!)
+                CoreDataHelper.set(recentlyDeleted: false, for: self.deletedRecords[indexPath.row], in: self.managedContext!)
                 self.deletedRecords.remove(at: self.deletedRecords.index(of: self.deletedRecords[indexPath.row])!)
                 tableView.reloadData()
             }
@@ -183,21 +184,21 @@ class DeletedAndExpiredController: UIViewController, UITableViewDelegate, UITabl
         let delete = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
             if indexPath.section == 0 { // expired
                 
-//                let conn = UserDefaultsHelper.currentConnection()
-//                if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
-//                    CloudKitHelper.permanentlyDeleteWithID(recordID: self.expiredRecords[indexPath.row].recordID!)
-//                } else {
-//                    UserDefaultsHelper.addRecordToDeleteQueue(recordID: self.expiredRecords[indexPath.row].recordID!)
-//                }
+                let conn = UserDefaultsHelper.currentConnection()
+                if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
+                    CloudKitHelper.permanentlyDeleteWithID(recordID: self.expiredRecords[indexPath.row].recordID!)
+                } else {
+                    UserDefaultsHelper.addRecordToDeleteQueue(recordID: self.expiredRecords[indexPath.row].recordID!)
+                }
                 CoreDataHelper.delete(record: self.expiredRecords[indexPath.row], in: self.managedContext!)
                 self.expiredRecords.remove(at: indexPath.row)
             } else { // recently deleted
-//                let conn = UserDefaultsHelper.currentConnection()
-//                if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
-//                    CloudKitHelper.permanentlyDeleteWithID(recordID: self.deletedRecords[indexPath.row].recordID!)
-//                } else {
-//                    UserDefaultsHelper.addRecordToDeleteQueue(recordID: self.deletedRecords[indexPath.row].recordID!)
-//                }
+                let conn = UserDefaultsHelper.currentConnection()
+                if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
+                    CloudKitHelper.permanentlyDeleteWithID(recordID: self.deletedRecords[indexPath.row].recordID!)
+                } else {
+                    UserDefaultsHelper.addRecordToDeleteQueue(recordID: self.deletedRecords[indexPath.row].recordID!)
+                }
                 CoreDataHelper.delete(record: self.deletedRecords[indexPath.row], in: self.managedContext!)
                 self.deletedRecords.remove(at: indexPath.row)
             }

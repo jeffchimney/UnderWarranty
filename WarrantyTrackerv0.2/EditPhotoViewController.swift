@@ -48,7 +48,7 @@ class EditPhotoViewController: UIViewController, UIImagePickerControllerDelegate
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        if AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) ==  AVAuthorizationStatus.authorized
+        if AVCaptureDevice.authorizationStatus(for: AVMediaType.video) ==  AVAuthorizationStatus.authorized
         {
             // Already Authorized
             openSettingsButton.isHidden = true
@@ -58,7 +58,7 @@ class EditPhotoViewController: UIViewController, UIImagePickerControllerDelegate
         }
         else
         {
-            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { (granted :Bool) -> Void in
+            AVCaptureDevice.requestAccess(for: AVMediaType.video, completionHandler: { (granted :Bool) -> Void in
                 if granted == true
                 {
                     // User granted
@@ -89,13 +89,13 @@ class EditPhotoViewController: UIViewController, UIImagePickerControllerDelegate
     func setUpCamera() {
         if !imagePicked {
             session = AVCaptureSession()
-            session!.sessionPreset = AVCaptureSessionPresetPhoto
-            let backCamera = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+            session!.sessionPreset = AVCaptureSession.Preset.photo
+            let backCamera = AVCaptureDevice.default(for: AVMediaType.video)
             
             var error: NSError?
             var input: AVCaptureDeviceInput!
             do {
-                input = try AVCaptureDeviceInput(device: backCamera)
+                input = try AVCaptureDeviceInput(device: backCamera!)
             } catch let error1 as NSError {
                 error = error1
                 input = nil
@@ -108,10 +108,10 @@ class EditPhotoViewController: UIViewController, UIImagePickerControllerDelegate
                 stillImageOutput = AVCaptureStillImageOutput()
                 stillImageOutput?.outputSettings = [AVVideoCodecKey: AVVideoCodecJPEG]
                 
-                if session!.canAddOutput(stillImageOutput) {
-                    session!.addOutput(stillImageOutput)
-                    videoPreviewLayer = AVCaptureVideoPreviewLayer(session: session)
-                    videoPreviewLayer!.videoGravity = AVLayerVideoGravityResizeAspectFill
+                if session!.canAddOutput(stillImageOutput!) {
+                    session!.addOutput(stillImageOutput!)
+                    videoPreviewLayer = AVCaptureVideoPreviewLayer(session: session!)
+                    videoPreviewLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
                     videoPreviewLayer!.connection?.videoOrientation = AVCaptureVideoOrientation.portrait
                     imageView.layer.addSublayer(videoPreviewLayer!)
                     session!.startRunning()
@@ -123,7 +123,7 @@ class EditPhotoViewController: UIViewController, UIImagePickerControllerDelegate
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) ==  AVAuthorizationStatus.authorized
+        if AVCaptureDevice.authorizationStatus(for: AVMediaType.video) ==  AVAuthorizationStatus.authorized
         {
             videoPreviewLayer!.frame = imageView.bounds
         }
@@ -136,12 +136,12 @@ class EditPhotoViewController: UIViewController, UIImagePickerControllerDelegate
     
     @IBAction func openCameraButton(sender: AnyObject) {
         generator.impactOccurred()
-        if let videoConnection = stillImageOutput!.connection(withMediaType: AVMediaTypeVideo) {
+        if let videoConnection = stillImageOutput!.connection(with: AVMediaType.video) {
             stillImageOutput?.captureStillImageAsynchronously(from: videoConnection, completionHandler: { (sampleBuffer, error) -> Void in
                 if sampleBuffer != nil {
-                    let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
+                    let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer!)
                     self.imageDataToSave = imageData
-                    let dataProvider = CGDataProvider(data: imageData as! CFData)
+                    let dataProvider = CGDataProvider(data: imageData! as CFData)
                     let cgImageRef = CGImage(jpegDataProviderSource: dataProvider!, decode: nil, shouldInterpolate: true, intent: CGColorRenderingIntent.defaultIntent)
                     let image = UIImage(cgImage: cgImageRef!, scale: 1.0, orientation: UIImageOrientation.right)
                     self.session?.stopRunning()
@@ -249,7 +249,7 @@ class EditPhotoViewController: UIViewController, UIImagePickerControllerDelegate
         let imageEntity = NSEntityDescription.entity(forEntityName: "Image", in: managedContext)!
         let image = NSManagedObject(entity: imageEntity, insertInto: managedContext) as! Image
         
-        image.image = imageDataToSave as NSData?
+        image.image = imageDataToSave as NSData? as! Data
         image.record = record!
         image.id = imageID
         
@@ -287,21 +287,21 @@ class EditPhotoViewController: UIViewController, UIImagePickerControllerDelegate
             if let nextViewController = segue.destination as? DetailsTableViewController {
                 if navBar.title == "Item" {
                     if (imageView.image != nil) { // set item image
-                        let cell = nextViewController.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! ImagesTableViewCell
+                        _ = nextViewController.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! ImagesTableViewCell
                         //cell.itemImageView.image = imageView.image
                     } else {
                         print("Was nil")
                     }
                 } else if navBar.title == "Receipt" {
                     if (imageView.image != nil) { // set receipt image
-                        let cell = nextViewController.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! ImagesTableViewCell
+                        _ = nextViewController.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! ImagesTableViewCell
                         //cell.receiptImageView.image = imageView.image
                     } else {
                         print("Was nil")
                     }
                 } else {
                     if (imageView.image != nil) { // set receipt image
-                        let cell = nextViewController.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! ImagesTableViewCell
+                        _ = nextViewController.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! ImagesTableViewCell
                         //cell.receiptImageView.image = imageView.image
                     } else {
                         print("Was nil")

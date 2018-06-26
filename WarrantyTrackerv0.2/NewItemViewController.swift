@@ -78,7 +78,7 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     override func viewWillAppear(_ animated: Bool) {        
-        if AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) ==  AVAuthorizationStatus.authorized
+        if AVCaptureDevice.authorizationStatus(for: AVMediaType.video) ==  AVAuthorizationStatus.authorized
         {
             // Already Authorized
             openSettingsButton.isHidden = true
@@ -90,7 +90,7 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
         }
         else
         {
-            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { (granted :Bool) -> Void in
+            AVCaptureDevice.requestAccess(for: AVMediaType.video, completionHandler: { (granted :Bool) -> Void in
                 if granted == true
                 {
                     // User granted
@@ -118,7 +118,7 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
         }
     }
     
-    func swiped(gesture: UISwipeGestureRecognizer)
+    @objc func swiped(gesture: UISwipeGestureRecognizer)
     {
         switch gesture.direction {
         case UISwipeGestureRecognizerDirection.left:
@@ -140,7 +140,7 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
         }
     }
     
-    func handleLongGesture(gesture: UILongPressGestureRecognizer)
+    @objc func handleLongGesture(gesture: UILongPressGestureRecognizer)
     {
         switch(gesture.state) {
         case UIGestureRecognizerState.began:
@@ -166,7 +166,7 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
             imagesCollectionView.cancelInteractiveMovement()
         }
     }
-    func tapped(gesture: UITapGestureRecognizer) {
+    @objc func tapped(gesture: UITapGestureRecognizer) {
         if photoDrawerIsShowing {
             let newConstraint = NSLayoutConstraint(item: imagesCollectionView, attribute: .trailing, relatedBy: .lessThanOrEqual, toItem: self.view, attribute: .leading, multiplier: 1.0, constant: CGFloat(0))
             
@@ -196,13 +196,13 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     func setUpCamera() {
         session = AVCaptureSession()
-        session!.sessionPreset = AVCaptureSessionPresetPhoto
-        let backCamera = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+        session!.sessionPreset = AVCaptureSession.Preset.photo
+        let backCamera = AVCaptureDevice.default(for: AVMediaType.video)
         
         var error: NSError?
         var input: AVCaptureDeviceInput!
         do {
-            input = try AVCaptureDeviceInput(device: backCamera)
+            input = try AVCaptureDeviceInput(device: backCamera!)
         } catch let error1 as NSError {
             error = error1
             input = nil
@@ -215,10 +215,10 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
             stillImageOutput = AVCaptureStillImageOutput()
             stillImageOutput?.outputSettings = [AVVideoCodecKey: AVVideoCodecJPEG]
             
-            if session!.canAddOutput(stillImageOutput) {
-                session!.addOutput(stillImageOutput)
-                videoPreviewLayer = AVCaptureVideoPreviewLayer(session: session)
-                videoPreviewLayer!.videoGravity = AVLayerVideoGravityResizeAspectFill
+            if session!.canAddOutput(stillImageOutput!) {
+                session!.addOutput(stillImageOutput!)
+                videoPreviewLayer = AVCaptureVideoPreviewLayer(session: session!)
+                videoPreviewLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
                 videoPreviewLayer!.connection?.videoOrientation = AVCaptureVideoOrientation.portrait
                 videoPreviewLayer!.frame = imageView.bounds
                 imageView.layer.addSublayer(videoPreviewLayer!)
@@ -234,10 +234,10 @@ class NewItemViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     @IBAction func openCameraButton(sender: AnyObject) {
         generator.impactOccurred()
-        if let videoConnection = stillImageOutput!.connection(withMediaType: AVMediaTypeVideo) {
+        if let videoConnection = stillImageOutput!.connection(with: AVMediaType.video) {
             stillImageOutput?.captureStillImageAsynchronously(from: videoConnection, completionHandler: { (sampleBuffer, error) -> Void in
                 if sampleBuffer != nil {
-                    let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
+                    let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer!)
                     self.imageDataToSave.append(imageData)
                     self.imagesCollectionView.reloadData()
                     let dataProvider = CGDataProvider(data: imageData! as CFData)

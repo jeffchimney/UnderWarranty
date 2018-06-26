@@ -109,7 +109,7 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         warrantiesTableView.tableHeaderView = searchController.searchBar
         
-        //NotificationCenter.default.addObserver(self, selector: #selector(statusManager), name: .flagsChanged, object: Network.reachability)
+        NotificationCenter.default.addObserver(self, selector: #selector(statusManager), name: .flagsChanged, object: Network.reachability)
         
         // fonts
 //        let defaultFont = UIFont(name: "Kohinoor Bangla", size: 15)!
@@ -130,7 +130,7 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         //self.navigationController?.isToolbarHidden = false
         //self.navigationController?.navigationBar.titleTextAttributes = [NSFontAttributeName: UIFont(name: "Kohinoor Telugu", size: 18)!]
         
-        //updateUserInterface()
+        updateUserInterface()
         handleRefresh(refreshControl: refreshControl)
     }
     
@@ -455,7 +455,7 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
 //        db.add(operation)
 //    }
     
-    func handleRefresh(refreshControl: UIRefreshControl) {
+    @objc func handleRefresh(refreshControl: UIRefreshControl) {
         if !refreshControl.isRefreshing {
             refreshControl.beginRefreshing()
         }
@@ -684,7 +684,7 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         cell.warrantyImageView.contentMode = .scaleAspectFit
         cell.title.textColor = cell.tintColor
-        cell.backgroundColor = UIColor(colorLiteralRed: 189, green: 195, blue: 201, alpha: 1.0)
+        //cell.backgroundColor = UIColor(displayP3Red: 189/255, green: 195/255, blue: 201/255, alpha: 1.0)
         cell.warrantyImageView.layer.cornerRadius = 15
         cell.warrantyImageView.layer.masksToBounds = true
         
@@ -854,32 +854,33 @@ class PrimaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //MARK: Network Connectivity Tests
-//    func updateUserInterface() {
-//        guard let status = Network.reachability?.status else { return }
-//        switch status {
-//        case .unreachable:
-//            defaults.set("unreachable", forKey: "connection")
-//        case .wifi:
-//            defaults.set("wifi", forKey: "connection")
-//            if UserDefaultsHelper.syncEnabled() {
-//                //syncEverything()
-//            }
-//
-//        case .wwan:
-//            defaults.set("data", forKey: "connection")
-//            if UserDefaultsHelper.canSyncUsingData() && UserDefaultsHelper.syncEnabled() {
-//                syncEverything() // there should only be anything in the queued array if the user is just coming out of an area of no service.
-//            }
-//        }
-//        print("Reachability Summary")
-//        print("Status:", status)
-//        print("HostName:", Network.reachability?.hostname ?? "nil")
-//        print("Reachable:", Network.reachability?.isReachable ?? "nil")
-//        print("Wifi:", Network.reachability?.isReachableViaWiFi ?? "nil")
-//    }
-//    func statusManager(_ notification: NSNotification) {
-//            updateUserInterface()
-//    }
+    func updateUserInterface() {
+        guard let status = Network.reachability?.status else { return }
+        switch status {
+        case .unreachable:
+            defaults.set("unreachable", forKey: "connection")
+        case .wifi:
+            defaults.set("wifi", forKey: "connection")
+            if UserDefaultsHelper.syncEnabled() {
+                //syncEverything()
+            }
+
+        case .wwan:
+            defaults.set("data", forKey: "connection")
+            if UserDefaultsHelper.canSyncUsingData() && UserDefaultsHelper.syncEnabled() {
+                //syncEverything() // there should only be anything in the queued array if the user is just coming out of an area of no service.
+            }
+        }
+        print("Reachability Summary")
+        print("Status:", status)
+        print("HostName:", Network.reachability?.hostname ?? "nil")
+        print("Reachable:", Network.reachability?.isReachable ?? "nil")
+        print("Wifi:", Network.reachability?.isReachableViaWiFi ?? "nil")
+    }
+    
+    @objc func statusManager(_ notification: NSNotification) {
+            updateUserInterface()
+    }
     
 //    func syncEverything() {
 ////        guard let appDelegate =

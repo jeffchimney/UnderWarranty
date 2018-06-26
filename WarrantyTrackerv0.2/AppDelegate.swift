@@ -25,43 +25,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         
         // register for notifications
-//        UNUserNotificationCenter.current().requestAuthorization(options: [[.alert, .sound, .badge]], completionHandler: { (granted, error) in
-//            // Handle Error
-//        })
-//        
+        UNUserNotificationCenter.current().requestAuthorization(options: [[.alert, .sound, .badge]], completionHandler: { (granted, error) in
+            // Handle Error
+        })
+        
 //        let settings = UIUserNotificationSettings(types: [UIUserNotificationType.alert, UIUserNotificationType.badge, UIUserNotificationType.sound], categories: nil)
-//        
+//
 //        application.registerUserNotificationSettings(settings)
 //        application.registerForRemoteNotifications()
-//        
+//
 //        if let options: NSDictionary = launchOptions as NSDictionary? {
 //            let remoteNotification =
 //                options[UIApplicationLaunchOptionsKey.remoteNotification]
-//            
-//            
+//
+//
 //            if let notification = remoteNotification {
 //                
-//                self.application(application, didReceiveRemoteNotification:
+//                self.application(application, performActionFor:
 //                    notification as! [AnyHashable : Any],
-//                                 fetchCompletionHandler:  { (result) in
+//                                 completionHandler:  { (result) in
 //                })
 //                UIApplication.shared.applicationIconBadgeNumber = 1 // clear current notifications
 //            }
 //        }
-//        
-//        // check for network availability
-//        do {
-//            Network.reachability = try Reachability(hostname: "www.google.com")
-//            do {
-//                try Network.reachability?.start()
-//            } catch let error as Network.Error {
-//                print(error)
-//            } catch {
-//                print(error)
-//            }
-//        } catch {
-//            print(error)
-//        }
+        
+        // check for network availability
+        do {
+            Network.reachability = try Reachability(hostname: "www.google.com")
+            do {
+                try Network.reachability?.start()
+            } catch let error as Network.Error {
+                print(error)
+            } catch {
+                print(error)
+            }
+        } catch {
+            print(error)
+        }
         
         return true
     }

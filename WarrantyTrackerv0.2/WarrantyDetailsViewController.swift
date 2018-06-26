@@ -87,7 +87,7 @@ class WarrantyDetailsViewController: UIViewController, UITextFieldDelegate, UITe
         return false // We do not want UITextField to insert line-breaks.
     }
     
-    func textFieldDidChange(_ textField: UITextField) {
+    @objc func textFieldDidChange(_ textField: UITextField) {
         if titleTextField.text != "" && descriptionTextField.text != "" {
             nextButton.isEnabled = true
         } else {

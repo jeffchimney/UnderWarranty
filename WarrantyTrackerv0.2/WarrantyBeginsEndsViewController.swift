@@ -156,18 +156,18 @@ class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDeleg
         
         record.title = titleString
         record.descriptionString = descriptionString
-        record.warrantyStarts = startDate as NSDate?
+        record.warrantyStarts = startDate
         if lifetimeWarrantySwitch.isOn {
-            record.warrantyEnds = NSDate.distantFuture as NSDate
+            record.warrantyEnds = NSDate.distantFuture as NSDate as Date as Date
         } else {
-            record.warrantyEnds = endDate as NSDate?
+            record.warrantyEnds = endDate
         }
         //record.itemImage = itemImageData as NSData?
         //record.receiptImage = receiptImageData as NSData?
         record.daysBeforeReminder = Int32(daysBeforeReminder)
         record.hasWarranty = lifetimeWarrantySwitch.isOn
-        record.dateCreated = Date() as NSDate?
-        record.lastUpdated = Date() as NSDate?
+        record.dateCreated = Date()
+        record.lastUpdated = Date()
         record.recentlyDeleted = false
         record.expired = false
         record.recordID = UUID().uuidString
@@ -224,8 +224,8 @@ class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDeleg
             
             image.id = UUID().uuidString
             image.record = record
-            image.lastSynced = Date() as NSDate
-            image.image = item! as NSData
+            image.lastSynced = Date()
+            image.image = item!
         }
         
         
@@ -234,15 +234,15 @@ class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDeleg
             try managedContext.save()
             // check if the user is signed in, if not then there is nothing to refresh.
                 // check what the current connection is.  If wifi, refresh.  If data, and sync by data is enabled, refresh.
-//            if UserDefaultsHelper.syncEnabled() {
-//                let conn = UserDefaultsHelper.currentConnection()
-//                if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
-//                    CloudKitHelper.importCDRecord(cdRecord: record, context: managedContext)
-//                } else {
-//                    // queue up the record to sync when you have a good connection
-//                    UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
-//                }
-//            }
+            if UserDefaultsHelper.syncEnabled() {
+                let conn = UserDefaultsHelper.currentConnection()
+                if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
+                    CloudKitHelper.importCDRecord(cdRecord: record, context: managedContext)
+                } else {
+                    // queue up the record to sync when you have a good connection
+                    UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
+                }
+            }
         } catch let error as NSError {
             print("Could not save. \(error), \(error.userInfo)")
         }
@@ -265,7 +265,7 @@ class WarrantyBeginsEndsViewController: UITableViewController, UIPickerViewDeleg
         if !exists {
             let newCalendar = EKCalendar(for:EKEntityType.event, eventStore:eventStore)
             newCalendar.title="UnderWarranty"
-            newCalendar.source = eventStore.defaultCalendarForNewEvents.source
+            newCalendar.source = eventStore.defaultCalendarForNewEvents?.source
             do {
                 try eventStore.saveCalendar(newCalendar, commit:true)
             } catch {

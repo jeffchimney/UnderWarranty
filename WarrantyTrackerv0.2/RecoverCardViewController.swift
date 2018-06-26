@@ -35,13 +35,13 @@ class RecoverCardViewController: UIViewController {
     
     override var previewActionItems: [UIPreviewActionItem] {
         let delete = UIPreviewAction(title: "Delete", style: .destructive, handler: {_,_ in
-            
+            CloudKitHelper.permanentlyDeleteWithID(recordID: self.record.recordID!)
             CoreDataHelper.delete(record: self.record, in: self.managedContext!) //self.deleteFromCoreData(record: self.record)
             self.recoverRecordDelegate?.reloadLastControllerTableView()
         })
         
         let recover = UIPreviewAction(title: "Recover", style: .default, handler: {_,_ in
-            CoreDataHelper.setRecentlyDeletedFalse(for: self.record, in: self.managedContext!) //self.setRecentlyDeletedFalse(for: self.record)
+            CoreDataHelper.set(recentlyDeleted: false, for: self.record, in: self.managedContext!)
             self.recoverRecordDelegate?.reloadLastControllerTableView()
         })
         

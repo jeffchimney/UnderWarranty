@@ -42,7 +42,7 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
         } else {
             calendarSwitch.isOn = false
         }
-        if AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) ==  AVAuthorizationStatus.authorized {
+        if AVCaptureDevice.authorizationStatus(for: AVMediaType.video) ==  AVAuthorizationStatus.authorized {
             cameraSwitch.isOn = true
         } else {
             cameraSwitch.isOn = false
@@ -62,7 +62,7 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
     override func viewDidAppear(_ animated: Bool) {
         // ask for camera permissions if not already set
         if(UserDefaults.standard.value(forKey: "CameraPermissions") == nil) {
-            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { (granted :Bool) -> Void in
+            AVCaptureDevice.requestAccess(for: AVMediaType.video, completionHandler: { (granted :Bool) -> Void in
                 if granted == true
                 {
                     // User granted

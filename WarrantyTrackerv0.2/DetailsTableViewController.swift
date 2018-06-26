@@ -218,12 +218,12 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
                 let endDateCell = tableView.cellForRow(at: IndexPath(row: 1, section: 1)) as! InfoTableViewCell
                 let descriptionCell = tableView.cellForRow(at: IndexPath(row: 0, section: 2)) as! NotesTableViewCell
                 
-                record.warrantyStarts = dateFormatter.date(from: startDateCell.detail.text!) as NSDate?
+                record.warrantyStarts = dateFormatter.date(from: startDateCell.detail.text!)
                 if !record.hasWarranty {
-                    record.warrantyEnds = dateFormatter.date(from: endDateCell.detail.text!) as NSDate?
+                    record.warrantyEnds = dateFormatter.date(from: endDateCell.detail.text!)
                 }
                 record.descriptionString = descriptionCell.title.text
-                record.lastUpdated = Date() as NSDate
+                record.lastUpdated = Date() as NSDate as Date
                 
                 do {
                     try managedContext.save()
@@ -390,12 +390,12 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
         performSegue(withIdentifier: "toImageView", sender: self)
     }
     
-    func imageViewTapped(sender: UITapGestureRecognizer) {
+    @objc func imageViewTapped(sender: UITapGestureRecognizer) {
         generator.impactOccurred()
         performSegue(withIdentifier: "toImageView", sender: self)
     }
     
-    func addButtonTapped(sender: Any) {
+    @objc func addButtonTapped(sender: Any) {
         generator.impactOccurred()
         tappedItem = false
         tappedReceipt = false
@@ -447,7 +447,7 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
         imageIDs.remove(at: indexToDelete)
     }
     
-    func keyboardWillShow(notification:NSNotification) {
+    @objc func keyboardWillShow(notification:NSNotification) {
         let userInfo:NSDictionary = notification.userInfo! as NSDictionary
         let keyboardFrame:NSValue = userInfo.value(forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
         let keyboardRectangle = keyboardFrame.cgRectValue
@@ -519,25 +519,7 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
         let managedContext =
             appDelegate.persistentContainer.viewContext
         
-        let fetchedRecord = CoreDataHelper.fetchRecord(with: record.recordID!, in: managedContext)
-        
-        fetchedRecord!.recentlyDeleted = true
-        fetchedRecord!.dateDeleted = Date() as NSDate?
-        
-        do {
-            try managedContext.save()
-            
-            // check what the current connection is.  If wifi, refresh.  If data, and sync by data is enabled, refresh.
-//            let conn = UserDefaultsHelper.currentConnection()
-//            if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
-//                CloudKitHelper.updateRecordInCloudKit(cdRecord: record, context: managedContext)
-//            } else {
-//                // queue up the record to sync when you have a good connection
-//                UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
-//            }
-        } catch {
-            print("Error deleting record")
-        }
+        CoreDataHelper.set(recentlyDeleted: true, for: record, in: managedContext)
     }
     
     @IBAction func deleteButtonPressed(_ sender: Any) {
@@ -550,8 +532,8 @@ class DetailsTableViewController: UITableViewController, UIPopoverPresentationCo
         
         if deleteButton.title == "Delete" { // delete first returned object
             record.recentlyDeleted = true
-            record.dateDeleted = Date() as NSDate
-            record.lastUpdated = Date() as NSDate
+            record.dateDeleted = Date() as NSDate as Date
+            record.lastUpdated = Date() as NSDate as Date
             do {
                 try managedContext.save()
                 

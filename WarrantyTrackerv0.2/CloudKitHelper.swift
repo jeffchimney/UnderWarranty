@@ -6,12 +6,12 @@
 //  Copyright © 2017 Jeff Chimney. All rights reserved.
 //
 
-//import Foundation
-//import CloudKit
-//import CoreData
-//
-//
-//class CloudKitHelper {
+import Foundation
+import CloudKit
+import CoreData
+
+
+class CloudKitHelper {
 //
 //    static func fetchAndUpdateLocalRecord(recordID: CKRecordID, in context: NSManagedObjectContext) {
 //        if UserDefaultsHelper.syncEnabled() {
@@ -75,57 +75,57 @@
 //        }
 //    }
 //
-//    static func importCDRecord(cdRecord: Record, context: NSManagedObjectContext) {
-//        if UserDefaultsHelper.syncEnabled() {
-//            let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
-//
-//            let predicate = NSPredicate(value: true)
-//            let query = CKQuery(recordType: "Records", predicate: predicate)
-//            let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
-//            privateDatabase.perform(query, inZoneWith: zoneID, completionHandler: { (results, error) in
-//                if error != nil {
-//                    print("Error retrieving from cloudkit")
-//                } else {
-//                    let ckRecord = CKRecord(recordType: "Records", recordID: CKRecordID(recordName: cdRecord.recordID!, zoneID: zoneID))
-//
-//                    let dateFormatter = DateFormatter()
-//                    dateFormatter.dateFormat = "MMM d, yyyy"
-//
-//                    let startDate = dateFormatter.string(from: cdRecord.warrantyStarts! as Date)
-//                    let endDate = dateFormatter.string(from: cdRecord.warrantyEnds! as Date)
-//
-//                    ckRecord.setObject(cdRecord.title! as CKRecordValue?, forKey: "title")
-//                    ckRecord.setObject(cdRecord.descriptionString! as CKRecordValue?, forKey: "descriptionString")
-//                    ckRecord.setObject(startDate as CKRecordValue, forKey: "warrantyStarts")
-//                    ckRecord.setObject(endDate as CKRecordValue, forKey: "warrantyEnds")
-//                    ckRecord.setObject(cdRecord.eventIdentifier! as CKRecordValue, forKey: "eventIdentifier")
-//                    ckRecord.setObject(cdRecord.daysBeforeReminder as CKRecordValue?, forKey: "daysBeforeReminder")
-//                    ckRecord.setObject(cdRecord.hasWarranty as CKRecordValue?, forKey: "hasWarranty")
-//                    ckRecord.setObject(cdRecord.recentlyDeleted as CKRecordValue?, forKey: "recentlyDeleted")
-//                    ckRecord.setObject(cdRecord.expired as CKRecordValue?, forKey: "expired")
-//                    let syncedDate = Date()
-//                    ckRecord.setObject(syncedDate as CKRecordValue?, forKey: "lastSynced")
-//
-//                    if cdRecord.recentlyDeleted {
-//                        let dateDeleted = dateFormatter.string(from: cdRecord.dateDeleted! as Date)
-//                        ckRecord.setObject(dateDeleted as CKRecordValue?, forKey: "dateDeleted")
-//                    }
-//
-//                    privateDatabase.save(ckRecord, completionHandler: { (record, error) in
-//                        if error != nil {
-//                            print(error!)
-//                            return
-//                        }
-//                        print("Successfully added record")
-//
-//                        self.importAssociatedImages(cdRecord: cdRecord, syncedDate: syncedDate, context: context)
-//                        self.importAssociatedNotes(cdRecord: cdRecord, syncedDate: syncedDate, context: context)
-//                    })
-//                }
-//            })
-//        }
-//    }
-//
+    static func importCDRecord(cdRecord: Record, context: NSManagedObjectContext) {
+        if UserDefaultsHelper.syncEnabled() {
+            let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
+
+            let predicate = NSPredicate(value: true)
+            let query = CKQuery(recordType: "Records", predicate: predicate)
+            let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
+            privateDatabase.perform(query, inZoneWith: zoneID, completionHandler: { (results, error) in
+                if error != nil {
+                    print("Error retrieving from cloudkit")
+                } else {
+                    let ckRecord = CKRecord(recordType: "Records", recordID: CKRecordID(recordName: cdRecord.recordID!, zoneID: zoneID))
+
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "MMM d, yyyy"
+
+                    let startDate = dateFormatter.string(from: cdRecord.warrantyStarts! as Date)
+                    let endDate = dateFormatter.string(from: cdRecord.warrantyEnds! as Date)
+
+                    ckRecord.setObject(cdRecord.title! as CKRecordValue?, forKey: "title")
+                    ckRecord.setObject(cdRecord.descriptionString! as CKRecordValue?, forKey: "descriptionString")
+                    ckRecord.setObject(startDate as CKRecordValue, forKey: "warrantyStarts")
+                    ckRecord.setObject(endDate as CKRecordValue, forKey: "warrantyEnds")
+                    ckRecord.setObject(cdRecord.eventIdentifier! as CKRecordValue, forKey: "eventIdentifier")
+                    ckRecord.setObject(cdRecord.daysBeforeReminder as CKRecordValue?, forKey: "daysBeforeReminder")
+                    ckRecord.setObject(cdRecord.hasWarranty as CKRecordValue?, forKey: "hasWarranty")
+                    ckRecord.setObject(cdRecord.recentlyDeleted as CKRecordValue?, forKey: "recentlyDeleted")
+                    ckRecord.setObject(cdRecord.expired as CKRecordValue?, forKey: "expired")
+                    let syncedDate = Date()
+                    ckRecord.setObject(syncedDate as CKRecordValue?, forKey: "lastSynced")
+
+                    if cdRecord.recentlyDeleted {
+                        let dateDeleted = dateFormatter.string(from: cdRecord.dateDeleted! as Date)
+                        ckRecord.setObject(dateDeleted as CKRecordValue?, forKey: "dateDeleted")
+                    }
+
+                    privateDatabase.save(ckRecord, completionHandler: { (record, error) in
+                        if error != nil {
+                            print(error!)
+                            return
+                        }
+                        print("Successfully added record")
+
+                        self.importAssociatedImages(cdRecord: cdRecord, syncedDate: syncedDate, context: context)
+                        //self.importAssociatedNotes(cdRecord: cdRecord, syncedDate: syncedDate, context: context)
+                    })
+                }
+            })
+        }
+    }
+
 //    static func updateRecordInCloudKit(cdRecord: Record, context: NSManagedObjectContext) {
 //        if UserDefaultsHelper.syncEnabled() {
 //         let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
@@ -176,6 +176,50 @@
 //            })
 //        }
 //    }
+    
+    static func set(recentlyDeleted: Bool, cdRecord: Record, context: NSManagedObjectContext) {
+        if UserDefaultsHelper.syncEnabled() {
+            let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
+            let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
+            let recordsPredicate = NSPredicate(format: "%K == %@", "recordID" ,CKReference(recordID: CKRecordID(recordName: cdRecord.recordID!, zoneID: zoneID), action: .none))
+            let query = CKQuery(recordType: "Records", predicate: recordsPredicate)
+            
+            privateDatabase.perform(query, inZoneWith: zoneID, completionHandler: { (results, error) in
+                if error != nil {
+                    DispatchQueue.main.async {
+                        print("Error retrieving from cloudkit")
+                    }
+                } else {
+                    if (results?.count)! > 0 {
+                        let ckRecord = (results?[0])!
+                        
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "MMM d, yyyy"
+                        
+                        ckRecord.setObject(cdRecord.recentlyDeleted as CKRecordValue?, forKey: "recentlyDeleted")
+                        let syncedDate = Date()
+                        ckRecord.setObject(syncedDate as CKRecordValue?, forKey: "lastSynced")
+                        
+                        if cdRecord.recentlyDeleted {
+                            ckRecord.setObject(dateFormatter.string(from: cdRecord.dateDeleted! as Date) as CKRecordValue, forKey: "dateDeleted")
+                        } else {
+                            ckRecord.setObject("" as CKRecordValue, forKey: "dateDeleted")
+                        }
+                        
+                        privateDatabase.save(ckRecord, completionHandler: { (record, error) in
+                            if error != nil {
+                                print(error!)
+                                return
+                            }
+                            DispatchQueue.main.async {
+                                print("Successfully updated record")
+                            }
+                        })
+                    }
+                }
+            })
+        }
+    }
 //
 //    static func syncImagesToCloudKit(associatedWith: Record, in context: NSManagedObjectContext) {
 //        if UserDefaultsHelper.syncEnabled() {
@@ -292,76 +336,76 @@
 //        }
 //    }
 //
-//    static func importAssociatedImages(cdRecord: Record, syncedDate: Date, context: NSManagedObjectContext) {
-//        if UserDefaultsHelper.syncEnabled() {
-//            let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
-//            let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
-//            let associatedImages = CoreDataHelper.fetchImages(for: cdRecord, in: context) //loadAssociatedCDImages(for: cdRecord)
-//
-//            for image in associatedImages {
-//                let ckImage = CKRecord(recordType: "Images", recordID: CKRecordID(recordName: image.id!, zoneID: zoneID))
-//
-//                let filename = ProcessInfo.processInfo.globallyUniqueString + ".png"
-//                let url = NSURL.fileURL(withPath: NSTemporaryDirectory()).appendingPathComponent(filename)
-//                do {
-//                    try image.image!.write(to: url, options: NSData.WritingOptions.atomicWrite)
-//
-//                    let imageAsset = CKAsset(fileURL: url)
-//
-//                    ckImage.setObject(imageAsset, forKey: "image")
-//
-//                    let reference = CKReference(recordID: CKRecordID(recordName: cdRecord.recordID!, zoneID: zoneID) , action: CKReferenceAction.deleteSelf)
-//                    ckImage.setObject(reference, forKey: "associatedRecord")
-//                    ckImage.setObject(syncedDate as CKRecordValue?, forKey: "lastSynced")
-//                    ckImage.setObject(image.id as CKRecordValue?, forKey: "id")
-//                    ckImage.setObject(0 as CKRecordValue?, forKey: "recentlyDeleted")
-//
-//                    privateDatabase.save(ckImage, completionHandler: { (record, error) in
-//                        if error != nil {
-//                            print(error!)
-//                            return
-//                        }
-//                        DispatchQueue.main.async {
-//                            print("Successfully saved image to cloudkit")
-//                        }
-//                    })
-//                } catch {
-//                    DispatchQueue.main.async {
-//                        print("Problems writing image data to URL")
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    static func importAssociatedNotes(cdRecord: Record, syncedDate: Date, context: NSManagedObjectContext) {
-//        if UserDefaultsHelper.syncEnabled() {
-//            let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
-//            let associatedNotes = CoreDataHelper.fetchNotes(for: cdRecord, in: context)
-//            let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
-//
-//            for note in associatedNotes {
-//                let ckNote = CKRecord(recordType: "Notes", recordID: CKRecordID(recordName: note.id!, zoneID: zoneID))
-//
-//                let reference = CKReference(recordID: CKRecordID(recordName: cdRecord.recordID!, zoneID: zoneID) , action: CKReferenceAction.deleteSelf)
-//                ckNote.setObject(reference, forKey: "associatedRecord")
-//                ckNote.setObject(Date() as CKRecordValue?, forKey: "lastSynced")
-//                ckNote.setObject(note.title! as CKRecordValue, forKey: "title")
-//                ckNote.setObject(note.noteString! as CKRecordValue, forKey: "noteString")
-//                ckNote.setObject(0 as CKRecordValue?, forKey: "recentlyDeleted")
-//
-//                privateDatabase.save(ckNote, completionHandler: { (record, error) in
-//                    if error != nil {
-//                        print(error!)
-//                        return
-//                    }
-//                    DispatchQueue.main.async {
-//                        print("Successfully saved note to cloudkit")
-//                    }
-//                })
-//            }
-//        }
-//    }
+    static func importAssociatedImages(cdRecord: Record, syncedDate: Date, context: NSManagedObjectContext) {
+        if UserDefaultsHelper.syncEnabled() {
+            let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
+            let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
+            let associatedImages = CoreDataHelper.fetchImages(for: cdRecord, in: context) //loadAssociatedCDImages(for: cdRecord)
+
+            for image in associatedImages {
+                let ckImage = CKRecord(recordType: "Images", recordID: CKRecordID(recordName: image.id!, zoneID: zoneID))
+
+                let filename = ProcessInfo.processInfo.globallyUniqueString + ".png"
+                let url = NSURL.fileURL(withPath: NSTemporaryDirectory()).appendingPathComponent(filename)
+                do {
+                    try image.image!.write(to: url, options: NSData.WritingOptions.atomicWrite)
+
+                    let imageAsset = CKAsset(fileURL: url)
+
+                    ckImage.setObject(imageAsset, forKey: "image")
+
+                    let reference = CKReference(recordID: CKRecordID(recordName: cdRecord.recordID!, zoneID: zoneID) , action: CKReferenceAction.deleteSelf)
+                    ckImage.setObject(reference, forKey: "associatedRecord")
+                    ckImage.setObject(syncedDate as CKRecordValue?, forKey: "lastSynced")
+                    ckImage.setObject(image.id as CKRecordValue?, forKey: "id")
+                    ckImage.setObject(0 as CKRecordValue?, forKey: "recentlyDeleted")
+
+                    privateDatabase.save(ckImage, completionHandler: { (record, error) in
+                        if error != nil {
+                            print(error!)
+                            return
+                        }
+                        DispatchQueue.main.async {
+                            print("Successfully saved image to cloudkit")
+                        }
+                    })
+                } catch {
+                    DispatchQueue.main.async {
+                        print("Problems writing image data to URL")
+                    }
+                }
+            }
+        }
+    }
+    
+    static func importAssociatedNotes(cdRecord: Record, syncedDate: Date, context: NSManagedObjectContext) {
+        if UserDefaultsHelper.syncEnabled() {
+            let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
+            let associatedNotes = CoreDataHelper.fetchNotes(for: cdRecord, in: context)
+            let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
+
+            for note in associatedNotes {
+                let ckNote = CKRecord(recordType: "Notes", recordID: CKRecordID(recordName: note.id!, zoneID: zoneID))
+
+                let reference = CKReference(recordID: CKRecordID(recordName: cdRecord.recordID!, zoneID: zoneID) , action: CKReferenceAction.deleteSelf)
+                ckNote.setObject(reference, forKey: "associatedRecord")
+                ckNote.setObject(Date() as CKRecordValue?, forKey: "lastSynced")
+                ckNote.setObject(note.title! as CKRecordValue, forKey: "title")
+                ckNote.setObject(note.noteString! as CKRecordValue, forKey: "noteString")
+                ckNote.setObject(0 as CKRecordValue?, forKey: "recentlyDeleted")
+
+                privateDatabase.save(ckNote, completionHandler: { (record, error) in
+                    if error != nil {
+                        print(error!)
+                        return
+                    }
+                    DispatchQueue.main.async {
+                        print("Successfully saved note to cloudkit")
+                    }
+                })
+            }
+        }
+    }
 //
 //    static func saveImageToCloud(imageRecord: Image, associatedRecord: Record) {
 //        if UserDefaultsHelper.syncEnabled() {
@@ -489,18 +533,18 @@
 //        }
 //    }
 //
-//    static func permanentlyDeleteWithID(recordID: String) {
-//        if UserDefaultsHelper.syncEnabled() {
-//            let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
-//            let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
-//            privateDatabase.delete(withRecordID: CKRecordID(recordName: recordID, zoneID: zoneID), completionHandler: ({record, error in
-//                if let err = error {
-//                    DispatchQueue.main.async() {
-//                        print(err.localizedDescription)
-//                    }
-//                }
-//            }))
-//        }
-//    }
-//}
+    static func permanentlyDeleteWithID(recordID: String) {
+        if UserDefaultsHelper.syncEnabled() {
+            let privateDatabase:CKDatabase = CKContainer.default().privateCloudDatabase
+            let zoneID = CKRecordZoneID(zoneName: "Records", ownerName: CKCurrentUserDefaultName)
+            privateDatabase.delete(withRecordID: CKRecordID(recordName: recordID, zoneID: zoneID), completionHandler: ({record, error in
+                if let err = error {
+                    DispatchQueue.main.async() {
+                        print(err.localizedDescription)
+                    }
+                }
+            }))
+        }
+    }
+}
 

@@ -49,13 +49,13 @@ class NewReceiptViewController: UIViewController, UIImagePickerControllerDelegat
         
         if !imagePicked {
             session = AVCaptureSession()
-            session!.sessionPreset = AVCaptureSessionPresetPhoto
-            let backCamera = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+            session!.sessionPreset = AVCaptureSession.Preset.photo
+            let backCamera = AVCaptureDevice.default(for: AVMediaType.video)
             
             var error: NSError?
             var input: AVCaptureDeviceInput!
             do {
-                input = try AVCaptureDeviceInput(device: backCamera)
+                input = try AVCaptureDeviceInput(device: backCamera!)
             } catch let error1 as NSError {
                 error = error1
                 input = nil
@@ -68,10 +68,10 @@ class NewReceiptViewController: UIViewController, UIImagePickerControllerDelegat
                 stillImageOutput = AVCaptureStillImageOutput()
                 stillImageOutput?.outputSettings = [AVVideoCodecKey: AVVideoCodecJPEG]
                 
-                if session!.canAddOutput(stillImageOutput) {
-                    session!.addOutput(stillImageOutput)
-                    videoPreviewLayer = AVCaptureVideoPreviewLayer(session: session)
-                    videoPreviewLayer!.videoGravity = AVLayerVideoGravityResizeAspectFill
+                if session!.canAddOutput(stillImageOutput!) {
+                    session!.addOutput(stillImageOutput!)
+                    videoPreviewLayer = AVCaptureVideoPreviewLayer(session: session!)
+                    videoPreviewLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
                     videoPreviewLayer!.connection?.videoOrientation = AVCaptureVideoOrientation.portrait
                     imageView.layer.addSublayer(videoPreviewLayer!)
                     session!.startRunning()
@@ -87,10 +87,10 @@ class NewReceiptViewController: UIViewController, UIImagePickerControllerDelegat
     }
     
     @IBAction func openCameraButton(sender: AnyObject) {
-        if let videoConnection = stillImageOutput!.connection(withMediaType: AVMediaTypeVideo) {
+        if let videoConnection = stillImageOutput!.connection(with: AVMediaType.video) {
             stillImageOutput?.captureStillImageAsynchronously(from: videoConnection, completionHandler: { (sampleBuffer, error) -> Void in
                 if sampleBuffer != nil {
-                    let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
+                    let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer!)
                     self.imageDataToSave = imageData
                     let dataProvider = CGDataProvider(data: imageData! as CFData)
                     let cgImageRef = CGImage(jpegDataProviderSource: dataProvider!, decode: nil, shouldInterpolate: true, intent: CGColorRenderingIntent.defaultIntent)
