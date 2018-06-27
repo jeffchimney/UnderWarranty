@@ -249,7 +249,7 @@ class EditPhotoViewController: UIViewController, UIImagePickerControllerDelegate
         let imageEntity = NSEntityDescription.entity(forEntityName: "Image", in: managedContext)!
         let image = NSManagedObject(entity: imageEntity, insertInto: managedContext) as! Image
         
-        image.image = imageDataToSave as NSData? as! Data
+        image.image = imageDataToSave
         image.record = record!
         image.id = imageID
         
@@ -257,13 +257,13 @@ class EditPhotoViewController: UIViewController, UIImagePickerControllerDelegate
             try managedContext.save()
             
             // check what the current connection is.  If wifi, refresh.  If data, and sync by data is enabled, refresh.
-//            let conn = UserDefaultsHelper.currentConnection()
-//            if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
-//                CloudKitHelper.saveImageToCloud(imageRecord: image, associatedRecord: record)
-//            } else {
-//                // queue up the record to sync when you have a good connection
-//                UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
-//            }
+            let conn = UserDefaultsHelper.currentConnection()
+            if (conn == "wifi" || (conn == "data" && UserDefaultsHelper.canSyncUsingData())) {
+                CloudKitHelper.saveImageToCloud(imageRecord: image, associatedRecord: record)
+            } else {
+                // queue up the record to sync when you have a good connection
+                UserDefaultsHelper.addRecordToQueue(recordID: record.recordID!)
+            }
             print("Saved image to CoreData")
         } catch {
             print("Problems saving note to CoreData")
